@@ -1,9 +1,7 @@
-import '@styles/globals.css'
-
-const layout = () => {
+export default function Layout({ children }) {
   return (
-    <div>layout</div>
-  )
+    <html>
+      <body>{children}</body>
+    </html>
+  );
 }
-
-export default layout
