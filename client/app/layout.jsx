@@ -1,7 +1,16 @@
-export default function Layout({ children }) {
+import { SessionProvider } from "next-auth/react";
+
+export default function Layout({ children, session }) {
   return (
     <html>
-      <body>{children}</body>
+      <body>
+        <SessionProvider session={session}>
+          {children}
+        </SessionProvider>
+      </body>
     </html>
   );
 }
+
+
+

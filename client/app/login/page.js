@@ -4,6 +4,7 @@ import Image from 'next/image';
 import React from 'react';
 import '../Home.css';
 import Link from 'next/link';
+import GoogleButton from '../_components/GoogleButton';
 
 
 const Login = () => {
@@ -32,10 +33,15 @@ const Login = () => {
 
         <p className='join'>
             New to SoccerBrite?{' '}
-            <Link href="/login" className='join-now'>
+            <Link href="/signup" className='join-now'>
                 Sign Up Now
             </Link>
         </p>
+
+        <div className="google-container">
+          <GoogleButton className='google-btn'/>
+        </div>
+
       </div>
       </>
     );

@@ -6,6 +6,10 @@ import './Home.css';
 import ronaldo from "../images/cover.png";
 import bottom from "../images/sb.jpg";
 import Link from 'next/link';
+import cleats from "../images/cleats.svg"
+import arena from "../images/soccer-arena.svg"
+import controller from "../images/controller.svg"
+
 
 const Home = () => {
   return (
@@ -31,6 +35,24 @@ const Home = () => {
         </div>
       </div>
 
+      <div className="event-card">
+        <div className="event-grid">
+          <div className="event-one">
+            <Image src={cleats} className="event-img" alt="cleats" />
+            <h3 className="event-subtitle">Invite Friends</h3>
+          </div>
+          <div className="event-two">
+            <Image src={arena} className="event-img" alt="events" />
+            <h3 className="event-subtitle">Create Events</h3>
+          </div>
+          <div className="event-three">
+            <Image src={controller} className="event-img" alt="cleats" />
+            <h3 className="event-subtitle">Game On!</h3>
+          </div>
+        </div>
+      </div>
+
+
       <div className="connect-section">
         <div className="connect-content">
           <div className="connect-image">
@@ -45,6 +67,10 @@ const Home = () => {
             </p>
           </div>
         </div>
+      </div>
+
+      <div className="footer">
+        
       </div>
     </>
   );
