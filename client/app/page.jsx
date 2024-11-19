@@ -1,17 +1,19 @@
 "use client";
-import Image from 'next/image'; 
-// SoccerBriteLanding.jsx 
-import React from 'react';
-import './Home.css';
+import Image from "next/image";
+// SoccerBriteLanding.jsx
+import React from "react";
+import "./Home.css";
 import ronaldo from "../images/cover.png";
 import bottom from "../images/sb.jpg";
-import Link from 'next/link';
-import cleats from "../images/cleats.svg"
-import arena from "../images/soccer-arena.svg"
-import controller from "../images/controller.svg"
+import Link from "next/link";
+import cleats from "../images/cleats.svg";
+import arena from "../images/soccer-arena.svg";
+import controller from "../images/controller.svg";
 
+import { useSession, signOut } from "next-auth/react";
 
 const Home = () => {
+  const { data: session, status } = useSession();
   return (
     <>
       <div className="header">
@@ -19,9 +21,15 @@ const Home = () => {
           <h1 className="title">SOCCERBRITE</h1>
         </div>
         <div className="btn">
-          <Link href="/signup">
-            <button className="signup-btn">Sign Up</button>
-          </Link>
+          {session ? (
+            <button className="signup-btn" onClick={() => signOut()}>
+              Sign out
+            </button>
+          ) : (
+            <Link href="/login">
+              <button className="signup-btn">Login</button>
+            </Link>
+          )}
         </div>
       </div>
 
@@ -52,7 +60,6 @@ const Home = () => {
         </div>
       </div>
 
-
       <div className="connect-section">
         <div className="connect-content">
           <div className="connect-image">
@@ -63,18 +70,20 @@ const Home = () => {
               <span className="highlight">WHERE PLAYERS CONNECT</span>
             </h2>
             <p className="section-description">
-              Showcase your skills with friends, invite them to play, and create exciting soccer events in just a few clicks. Whether you're organizing a casual pick-up game or a competitive match, SoccerBrite makes it easy to host, manage, and share soccer events. Find players, reserve fields, and bring the game to life—anytime, anywhere.
+              Showcase your skills with friends, invite them to play, and create
+              exciting soccer events in just a few clicks. Whether you're
+              organizing a casual pick-up game or a competitive match,
+              SoccerBrite makes it easy to host, manage, and share soccer
+              events. Find players, reserve fields, and bring the game to
+              life—anytime, anywhere.
             </p>
           </div>
         </div>
       </div>
 
-      <div className="footer">
-        
-      </div>
+      <div className="footer"></div>
     </>
   );
 };
 
 export default Home;
-

@@ -8,6 +8,13 @@ export const authOptions = {
       clientSecret: process.env.GOOGLE_SECRET,
     }),
   ],
+  callbacks: {
+    // Customize redirect behavior
+    async redirect({ url, baseUrl }) {
+      console.log("Redirect Callback", { url, baseUrl });
+      return url.startsWith(baseUrl) ? baseUrl : url; // Restrict to same-origin
+    },
+  },
 };
 
 export const handler = NextAuth(authOptions);
