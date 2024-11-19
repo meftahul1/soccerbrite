@@ -1,21 +1,23 @@
-// hooks/useEvents.js
 import { useState, useEffect } from "react";
 
 const useEvents = () => {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState(() => {
+    return JSON.parse(localStorage.getItem("events")) || [];
+  });
 
   useEffect(() => {
-    const storedEvents = JSON.parse(localStorage.getItem("events")) || [];
-    setEvents(storedEvents);
-  }, []);
+    localStorage.setItem("events", JSON.stringify(events));
+  }, [events]);
 
   const addEvent = (newEvent) => {
-    const updatedEvents = [...events, newEvent];
-    setEvents(updatedEvents);
-    localStorage.setItem("events", JSON.stringify(updatedEvents));
+    setEvents((prevEvents) => [...prevEvents, newEvent]);
   };
 
-  return { events, addEvent };
+  const deleteEvent = (id) => {
+    setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
+  };
+
+  return { events, addEvent, deleteEvent };
 };
 
 export default useEvents;

@@ -1,54 +1,51 @@
-// app/calendar/page.jsx
 "use client";
 
-import React, { useState, useEffect } from "react";
-import useEvents from "../hooks/useEvents"; // Import custom hook
+import React, { useState } from "react";
+import useEvents from "../hooks/useEvents"; 
 import Link from "next/link";
-import "./calendar.css";  // Assuming styles are here
+import "./calendar.css"; 
 
 const Calendar = () => {
-  const { events } = useEvents(); // Get events from custom hook
+  const { events } = useEvents();
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth();
-
-  const generateDays = (year, month) => {
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const generateCalendarDays = (date) => {
+    const year = date.getFullYear();
+    const month = date.getMonth();
     const firstDay = new Date(year, month, 1).getDay();
-    const days = [];
-    let dayCount = 1;
+    const lastDate = new Date(year, month + 1, 0).getDate();
 
+    const days = [];
     for (let i = 0; i < firstDay; i++) {
       days.push(null);
     }
-
-    while (dayCount <= daysInMonth) {
-      days.push(dayCount);
-      dayCount++;
+    for (let i = 1; i <= lastDate; i++) {
+      days.push(new Date(year, month, i));
     }
-
-    while (days.length % 7 !== 0) {
-      days.push(null);
-    }
-
     return days;
   };
 
-  const days = generateDays(currentYear, currentMonth);
+  const [calendarDays, setCalendarDays] = useState(generateCalendarDays(currentDate));
 
-  const nextMonth = () => {
-    setCurrentDate(new Date(currentYear, currentMonth + 1, 1));
+  const handlePrevMonth = () => {
+    const prevMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1);
+    setCurrentDate(prevMonth);
+    setCalendarDays(generateCalendarDays(prevMonth));
   };
 
-  const prevMonth = () => {
-    setCurrentDate(new Date(currentYear, currentMonth - 1, 1));
+  const handleNextMonth = () => {
+    const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
+    setCurrentDate(nextMonth);
+    setCalendarDays(generateCalendarDays(nextMonth));
   };
 
-  const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December"
-  ];
+  const eventsByDate = events.reduce((acc, event) => {
+    const eventDate = new Date(event.date);
+    const eventKey = eventDate.toISOString().split("T")[0];
+    acc[eventKey] = acc[eventKey] || [];
+    acc[eventKey].push(event);
+    return acc;
+  }, {});
 
   return (
     <div className="user-home-container">
@@ -64,11 +61,12 @@ const Calendar = () => {
       <div className="main-content">
         <div className="calendar-container">
           <div className="calendar-header">
-            <button onClick={prevMonth}>&lt;</button>
-            <span>{monthNames[currentMonth]} {currentYear}</span>
-            <button onClick={nextMonth}>&gt;</button>
+            <button onClick={handlePrevMonth}>&lt;</button>
+            <h2>
+              {currentDate.toLocaleString("default", { month: "long" })} {currentDate.getFullYear()}
+            </h2>
+            <button onClick={handleNextMonth}>&gt;</button>
           </div>
-
           <div className="calendar-grid">
             <div className="calendar-day-name">Sun</div>
             <div className="calendar-day-name">Mon</div>
@@ -77,19 +75,23 @@ const Calendar = () => {
             <div className="calendar-day-name">Thu</div>
             <div className="calendar-day-name">Fri</div>
             <div className="calendar-day-name">Sat</div>
-
-            {days.map((day, index) => (
-              <div key={index} className={`calendar-day ${day === new Date().getDate() && currentMonth === new Date().getMonth() && currentYear === new Date().getFullYear() ? "current-day" : ""}`}>
-                {day}
-                <div className="events-on-day">
-                  {events
-                    .filter((event) => event.date.includes(day))
-                    .map((event) => (
+            {calendarDays.map((day, index) => (
+              <div
+                key={index}
+                className={`calendar-day ${
+                  day && day.toDateString() === new Date().toDateString() ? "current-day" : ""
+                }`}
+              >
+                {day && (
+                  <div>
+                    <span>{day.getDate()}</span>
+                    {eventsByDate[day.toISOString().split("T")[0]]?.map((event) => (
                       <div key={event.id} className="event">
                         {event.name}
                       </div>
                     ))}
-                </div>
+                  </div>
+                )}
               </div>
             ))}
           </div>

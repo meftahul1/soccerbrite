@@ -1,7 +1,13 @@
-export default function Layout({ children }) {
+import { EventsProvider } from "./hooks/EventsContext"; 
+
+export default function RootLayout({ children }) {
   return (
-    <html>
-      <body>{children}</body>
+    <html lang="en">
+      <body>
+        <EventsProvider>
+          {children}
+        </EventsProvider>
+      </body>
     </html>
   );
 }

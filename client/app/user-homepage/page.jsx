@@ -9,7 +9,6 @@ const UserHome = () => {
       <div className="sidebar">
         <h2 className="sidebar-title">Dashboard</h2>
         <ul className="sidebar-menu">
-          {/* Use Next.js routing for navigation */}
           <li>
             <Link href="/events">Events</Link>
           </li>

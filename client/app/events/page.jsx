@@ -1,16 +1,25 @@
-// app/events/page.jsx
 "use client";
 
 import React, { useState } from "react";
-import useEvents from "../hooks/useEvents";  // Import custom hook
+import useEvents from "../hooks/useEvents";  
 import Link from "next/link";
-import "./events.css";  // Assuming styles are here
+import "./events.css"; 
 
 const Events = () => {
-  const { events, addEvent } = useEvents(); // Get events and addEvent function
+  const { events, addEvent, deleteEvent } = useEvents();
+  
+  const months = [
+    "January", "February", "March", "April", "May", "June", 
+    "July", "August", "September", "October", "November", "December"
+  ];
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 10 }, (_, i) => currentYear + i);
+
   const [formData, setFormData] = useState({
     name: "",
-    date: "",
+    month: new Date().getMonth(),
+    date: new Date().getDate(),
+    year: new Date().getFullYear(),
     location: "",
   });
 
@@ -21,16 +30,34 @@ const Events = () => {
 
   const handleAddEvent = (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.date || !formData.location) {
+    const { name, month, date, year, location } = formData;
+
+    if (!name || !month || !date || !year || !location) {
       alert("Please fill in all fields!");
       return;
     }
+
+    const eventDate = new Date(year, month, date);
+
     const newEvent = {
       id: events.length + 1,
-      ...formData,
+      name,
+      date: eventDate.toISOString().split("T")[0],
+      location,
     };
+
     addEvent(newEvent);
-    setFormData({ name: "", date: "", location: "" });
+    setFormData({
+      name: "",
+      month: new Date().getMonth(),
+      date: new Date().getDate(),
+      year: new Date().getFullYear(),
+      location: "",
+    });
+  };
+
+  const handleDeleteEvent = (id) => {
+    deleteEvent(id); 
   };
 
   return (
@@ -52,6 +79,7 @@ const Events = () => {
             {events.map((event) => (
               <li key={event.id}>
                 <strong>{event.name}</strong> - {event.date} at {event.location}
+                <button onClick={() => handleDeleteEvent(event.id)}>Delete</button>
               </li>
             ))}
           </ul>
@@ -72,15 +100,47 @@ const Events = () => {
               />
             </div>
             <div>
+              <label>Month:</label>
+              <select
+                name="month"
+                value={formData.month}
+                onChange={handleInputChange}
+                required
+              >
+                {months.map((month, index) => (
+                  <option key={index} value={index}>
+                    {month}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
               <label>Date:</label>
               <input
-                type="text"
+                type="number"
                 name="date"
                 value={formData.date}
                 onChange={handleInputChange}
-                placeholder="Enter event date"
+                min="1"
+                max="31"
+                placeholder="Enter date"
                 required
               />
+            </div>
+            <div>
+              <label>Year:</label>
+              <select
+                name="year"
+                value={formData.year}
+                onChange={handleInputChange}
+                required
+              >
+                {years.map((year, index) => (
+                  <option key={index} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label>Location:</label>
