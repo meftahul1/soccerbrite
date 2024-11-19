@@ -33,7 +33,7 @@ const Navbar = () => {
                 SoccerBrite
             </h1>
             <Link href="/signup">
-                <button className="hidden md:block bg-white px-8 py-2 rounded-full">Sign Up</button>
+                <button className="hidden md:block bg-white px-8 py-2 rounded-full transition hover:bg-gray-200">Sign Up</button>
             </Link>
             {/* <button className="hidden md:block bg-white px-8 py-2 rounded-full">Sign Up</button> */}
             <Image src={icon} onClick={() => setshowMenu(true)} alt="icon" className='md:hidden w-7 cursor-pointer'/>

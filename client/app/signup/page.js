@@ -16,8 +16,14 @@ const Signup = () => {
         </div>
       </div>
       <div className="signup-container">
-        <h1>Welcome to SoccerBrite</h1>
-        <h2>Enter Credentials to Sign Up</h2>
+
+      <h1 className="text-2xl sm:text-5xl md:text-6xl font-bold mb-4">
+          SoccerBrite
+      </h1>
+      <h2 className="text-lg sm:text-xl md:text-2xl font-medium">
+          Enter Credentials to Sign Up
+      </h2>
+        
     
         <form className="signup-form">
           <label htmlFor="firstName">First Name</label>

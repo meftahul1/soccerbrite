@@ -6,3 +6,7 @@
 * {
     font-family: Saira-Condensed;
 }
+
+body {
+    overflow: hidden;
+}

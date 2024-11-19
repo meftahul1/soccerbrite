@@ -2,6 +2,7 @@ body {
   margin: 0;
   padding-bottom: 500px;
   background-color: #e3e3e3;
+  overflow: hidden;
 }
 
 .header {
@@ -294,5 +295,22 @@ body {
 
 .google-btn {
   padding: 100px;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+}
+.line {
+  flex: 1;
+  height: 1px;
+  background-color: #ccc;
+  margin: 0 10px;
+}
+.or-text {
+  font-size: 14px;
+  color: #666;
 }
 

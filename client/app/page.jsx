@@ -95,7 +95,6 @@ const Home = () => {
     <About />
     <Events />
     <Footer />
-  
     </div>
     
   );

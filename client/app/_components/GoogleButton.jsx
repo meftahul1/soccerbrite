@@ -3,14 +3,17 @@ import { signIn } from 'next-auth/react'
 const GoogleButton = () => {
   return (
     <button
-      className="flex w-full justify-center gap-5 rounded bg-black px-4 py-4 text-sm font-bold drop-shadow-md hover:bg-gray-50"
+      className="flex w-full justify-center items-center gap-3 rounded-lg bg-gray-50 px-4 py-3 text-sm font-medium border border-gray-300 transition hover:bg-gray-100 mt-4"
       onClick={() => signIn('google')}
     >
-      <GoogleLogo />
-      <div>Sign in with Google</div>
+      <div className="flex items-center gap-2">
+        <GoogleLogo />
+        <span>Continue with Google</span>
+      </div>
+      {/* <span className="text-gray-500">→</span> */}
     </button>
-  )
-}
+  );
+};
 
 export default GoogleButton
 
