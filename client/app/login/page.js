@@ -2,7 +2,8 @@
 import Image from 'next/image'; 
 // SoccerBriteLanding.jsx 
 import React from 'react';
-import '../Home.css';
+// import '../Home.css';
+import '@styles/globals.css'
 import Link from 'next/link';
 import GoogleButton from '../_components/GoogleButton';
 
