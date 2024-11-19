@@ -1,67 +1,33 @@
 "use client";
 
-import React, { useState } from "react";
-import useEvents from "../hooks/useEvents";  
+import React from "react";
 import Link from "next/link";
-import "./events.css"; 
+import useEvents from "../hooks/useEvents";
+import "./events.css";
 
 const Events = () => {
-  const { events, addEvent, deleteEvent } = useEvents();
-  
-  const months = [
-    "January", "February", "March", "April", "May", "June", 
-    "July", "August", "September", "October", "November", "December"
-  ];
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 10 }, (_, i) => currentYear + i);
+  const { events, deleteEvent } = useEvents(); 
 
-  const [formData, setFormData] = useState({
-    name: "",
-    month: new Date().getMonth(),
-    date: new Date().getDate(),
-    year: new Date().getFullYear(),
-    location: "",
-  });
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+  const handleSignUp = (id) => {
+    console.log(`Signed up for event with ID: ${id}`);
   };
 
-  const handleAddEvent = (e) => {
-    e.preventDefault();
-    const { name, month, date, year, location } = formData;
+  const handleCancelRegistration = (id) => {
+    deleteEvent(id);
+    console.log(`Canceled registration for event with ID: ${id}`);
+  };
 
-    if (!name || !month || !date || !year || !location) {
-      alert("Please fill in all fields!");
-      return;
-    }
-
-    const eventDate = new Date(year, month, date);
-
-    const newEvent = {
-      id: events.length + 1,
-      name,
-      date: eventDate.toISOString().split("T")[0],
-      location,
-    };
-
-    addEvent(newEvent);
-    setFormData({
-      name: "",
-      month: new Date().getMonth(),
-      date: new Date().getDate(),
-      year: new Date().getFullYear(),
-      location: "",
-    });
+  const handleEditEvent = (id) => {
+    console.log(`Editing event with ID: ${id}`);
   };
 
   const handleDeleteEvent = (id) => {
-    deleteEvent(id); 
+    deleteEvent(id);
+    console.log(`Deleted event with ID: ${id}`);
   };
 
   return (
-    <div className="user-home-container">
+    <div className="events-layout">
       <div className="sidebar">
         <h2 className="sidebar-title">Dashboard</h2>
         <ul className="sidebar-menu">
@@ -71,90 +37,50 @@ const Events = () => {
         </ul>
       </div>
 
-      <div className="main-content">
-        <h1>Events Page</h1>
-        <div className="events-list">
-          <h2>Upcoming Events</h2>
-          <ul>
-            {events.map((event) => (
-              <li key={event.id}>
-                <strong>{event.name}</strong> - {event.date} at {event.location}
-                <button onClick={() => handleDeleteEvent(event.id)}>Delete</button>
-              </li>
-            ))}
-          </ul>
+      <div className="events-content">
+        <div className="header">
+          <h1>Soccer Events</h1>
+          <Link href="/events/create" className="create-event-btn">
+            Create New Event
+          </Link>
         </div>
 
-        <div className="events-form">
-          <h2>Add New Event</h2>
-          <form onSubmit={handleAddEvent}>
-            <div>
-              <label>Event Name:</label>
-              <input
-                type="text"
-                name="name"
-                value={formData.name}
-                onChange={handleInputChange}
-                placeholder="Enter event name"
-                required
-              />
+        <div className="events-container">
+          {events.map((event) => (
+            <div key={event.id} className="event-card">
+              <h2>{event.name}</h2>
+              <p>{event.description}</p>
+              <p><strong>Date:</strong> {event.date}</p>
+              <p><strong>Location:</strong> {event.location}</p>
+              <p><strong>Spots:</strong> {event.spots}</p>
+              <div className="event-actions">
+                <button
+                  className="event-btn sign-up"
+                  onClick={() => handleSignUp(event.id)}
+                >
+                  Sign Up
+                </button>
+                <button
+                  className="event-btn cancel-registration"
+                  onClick={() => handleCancelRegistration(event.id)}
+                >
+                  Cancel Registration
+                </button>
+                <button
+                  className="event-btn edit-event"
+                  onClick={() => handleEditEvent(event.id)}
+                >
+                  Edit Event
+                </button>
+                <button
+                  className="event-btn delete-event"
+                  onClick={() => handleDeleteEvent(event.id)}
+                >
+                  Delete Event
+                </button>
+              </div>
             </div>
-            <div>
-              <label>Month:</label>
-              <select
-                name="month"
-                value={formData.month}
-                onChange={handleInputChange}
-                required
-              >
-                {months.map((month, index) => (
-                  <option key={index} value={index}>
-                    {month}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Date:</label>
-              <input
-                type="number"
-                name="date"
-                value={formData.date}
-                onChange={handleInputChange}
-                min="1"
-                max="31"
-                placeholder="Enter date"
-                required
-              />
-            </div>
-            <div>
-              <label>Year:</label>
-              <select
-                name="year"
-                value={formData.year}
-                onChange={handleInputChange}
-                required
-              >
-                {years.map((year, index) => (
-                  <option key={index} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>Location:</label>
-              <input
-                type="text"
-                name="location"
-                value={formData.location}
-                onChange={handleInputChange}
-                placeholder="Enter event location"
-                required
-              />
-            </div>
-            <button type="submit">Add Event</button>
-          </form>
+          ))}
         </div>
       </div>
     </div>

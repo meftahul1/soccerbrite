@@ -10,8 +10,10 @@ const useEvents = () => {
   }, [events]);
 
   const addEvent = (newEvent) => {
-    setEvents((prevEvents) => [...prevEvents, newEvent]);
-  };
+    const updatedEvents = [...events, { id: Date.now(), ...newEvent }];
+    setEvents(updatedEvents);
+    localStorage.setItem("events", JSON.stringify(updatedEvents));
+  };  
 
   const deleteEvent = (id) => {
     setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));

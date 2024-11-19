@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import Link from "next/link"; // Import Link from next/link
 import React, { useState } from "react";
-import "../Home.css";
+import "./login.css";
 
 const Login = () => {
   const router = useRouter();

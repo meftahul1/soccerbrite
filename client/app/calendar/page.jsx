@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import useEvents from "../hooks/useEvents"; 
+import useEvents from "../hooks/useEvents";
 import Link from "next/link";
-import "./calendar.css"; 
+import "./calendar.css";
 
 const Calendar = () => {
   const { events } = useEvents();
@@ -40,15 +40,14 @@ const Calendar = () => {
   };
 
   const eventsByDate = events.reduce((acc, event) => {
-    const eventDate = new Date(event.date);
-    const eventKey = eventDate.toISOString().split("T")[0];
+    const eventKey = new Date(event.date).toISOString().split("T")[0];
     acc[eventKey] = acc[eventKey] || [];
     acc[eventKey].push(event);
     return acc;
   }, {});
 
   return (
-    <div className="user-home-container">
+    <div className="calendar-layout">
       <div className="sidebar">
         <h2 className="sidebar-title">Dashboard</h2>
         <ul className="sidebar-menu">
@@ -58,7 +57,7 @@ const Calendar = () => {
         </ul>
       </div>
 
-      <div className="main-content">
+      <div className="calendar-content">
         <div className="calendar-container">
           <div className="calendar-header">
             <button onClick={handlePrevMonth}>&lt;</button>

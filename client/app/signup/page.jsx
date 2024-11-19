@@ -2,7 +2,7 @@
 import Image from 'next/image'; 
 // SoccerBriteLanding.jsx 
 import React from 'react';
-import '../Home.css';
+import './signup.css';
 import Link from 'next/link';
 
 

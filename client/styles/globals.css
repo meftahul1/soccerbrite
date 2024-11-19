@@ -1,4 +1,327 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Global Styles */
+body {
+    font-family: 'Inter', sans-serif; /* Modern, clean font */
+    margin: 0;
+    padding: 0;
+    background-color: #f9fafb; /* Light background for a softer look */
+    color: #333;
+}
 
+/* Header Styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background-color: #000; /* Black background for the header */
+    color: white;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Soft shadow for the header */
+    border-bottom: 2px solid #444; /* Subtle border for separation */
+}
+
+.logo-container {
+    flex-shrink: 0;
+}
+
+.logo {
+    width: 120px;
+    height: auto;
+}
+
+.header h1 {
+    font-size: 36px;
+    font-weight: 600;
+    color: white;
+    margin-left: 20px; /* Space between logo and text */
+    text-transform: uppercase; /* Gives a more modern, bold look */
+}
+
+/* Create Event Button */
+.create-event-btn {
+    background-color: #f44336; /* Vivid red for attention */
+    color: white;
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 30px; /* More rounded */
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.create-event-btn:hover {
+    background-color: #d32f2f; /* Darker red on hover */
+    transform: translateY(-3px); /* Lift effect */
+}
+
+/* Events Grid */
+.events-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    margin-top: 40px;
+}
+
+@media (min-width: 768px) {
+    .events-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (min-width: 1024px) {
+    .events-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+/* Event Card Styles */
+.event-card {
+    background-color: #ffffff; /* White background for cards */
+    border-radius: 20px; /* Rounded corners */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); /* Soft shadow */
+    padding: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 320px;
+    border: 1px solid #f2f2f2;
+    box-sizing: border-box;
+}
+
+.event-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Enhanced hover effect */
+}
+
+.event-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 10px;
+    font-family: 'Roboto', sans-serif; /* More impactful title font */
+}
+
+.event-details {
+    font-size: 16px;
+    color: #4a5568;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.event-location,
+.event-date,
+.event-spots {
+    font-size: 14px;
+    color: #718096; /* Lighter grey for less important info */
+    margin-bottom: 5px;
+}
+
+/* Event Actions */
+.event-actions {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.event-actions button {
+    background-color: #f44336; /* Matching red button for actions */
+    color: white;
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s ease;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.event-actions button:hover {
+    background-color: #d32f2f;
+    transform: translateY(-3px);
+}
+
+.event-actions button:disabled {
+    background-color: #e2e8f0;
+    color: #a0aec0;
+    cursor: not-allowed;
+}
+
+/* Cancel Registration Button */
+.cancel-registration-btn {
+    background-color: #edf2f7; /* Soft light grey */
+    color: #2d3748;
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 100%;
+}
+
+.cancel-registration-btn:hover {
+    background-color: #e2e8f0;
+    transform: translateY(-2px);
+}
+
+/* Edit Event Button */
+.edit-event-btn {
+    background-color: #48bb78; /* Fresh green */
+    color: white;
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.edit-event-btn:hover {
+    background-color: #38a169; /* Slightly darker green on hover */
+    transform: translateY(-2px);
+}
+
+/* Delete Event Button */
+.delete-event-btn {
+    background-color: #e53e3e; /* Strong red */
+    color: white;
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    width: 100%;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.delete-event-btn:hover {
+    background-color: #c53030;
+    transform: translateY(-2px);
+}
+
+/* Edit Form Modal Styles */
+.edit-event-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+}
+
+.edit-event-form {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    font-family: 'Roboto', sans-serif;
+}
+
+.edit-event-form label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.edit-event-form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background-color: #f7fafc;
+    transition: border 0.3s ease;
+}
+
+.edit-event-form input:focus {
+    border-color: #48bb78; /* Green focus */
+    outline: none;
+}
+
+.edit-event-form button {
+    padding: 12px 24px;
+    background-color: #48bb78;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-right: 10px;
+    transition: opacity 0.3s ease, background-color 0.3s ease;
+}
+
+.edit-event-form button.cancel-btn {
+    background-color: #e53e3e;
+}
+
+.edit-event-form button:hover {
+    opacity: 0.9;
+    background-color: #38a169;
+}
+
+/* Responsive Styles */
+@media (max-width: 767px) {
+    .dashboard-container {
+        padding: 10px;
+    }
+
+    .header h1 {
+        font-size: 28px;
+    }
+
+    .create-event-btn {
+        padding: 10px 20px;
+    }
+}
+
+/* Footer Styles */
+.footer {
+    background-color: #000; /* Black background */
+    color: white; /* White text for contrast */
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.footer p {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Animated Loading Spinner  */
+.spinner {
+    border: 8px solid #f3f3f3; /* Light background */
+    border-top: 8px solid #48bb78; /* Green spinner */
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1.5s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

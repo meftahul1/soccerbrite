@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const UserHome = () => {
   return (
-    <div className="user-home-container">
+    <div className="user-home-layout">
       <div className="sidebar">
         <h2 className="sidebar-title">Dashboard</h2>
         <ul className="sidebar-menu">
@@ -21,7 +21,8 @@ const UserHome = () => {
         </ul>
       </div>
       <div className="main-content">
-      
+        <h2>Welcome to Soccerbrite</h2>
+        <p>Select an option from the sidebar to proceed.</p>
       </div>
     </div>
   );
