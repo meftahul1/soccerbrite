@@ -1,12 +1,11 @@
 "use client";
 import Image from "next/image";
 // SoccerBriteLanding.jsx
-import React from "react";
+import React, { useState } from "react";
 import "../Home.css";
 import Link from "next/link";
 import GoogleButton from "../_components/GoogleButton";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const Signup = () => {
@@ -31,14 +30,14 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://127.0.0.1:5000/api/auth/register", {
+      const res = await fetch("http://127.0.0.1:5000/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email,
-          password,
           firstName,
           lastName,
+		  email,
+          password
         }),
       });
 
@@ -66,7 +65,7 @@ const Signup = () => {
         <h1>Welcome to SoccerBrite</h1>
         <h2>Enter Credentials to Sign Up</h2>
     
-        <form className="signup-form">
+        <form className="signup-form" onSubmit={handleSubmit}>
           <label htmlFor="firstName">First Name</label>
           <input
             type="text"
@@ -74,6 +73,7 @@ const Signup = () => {
             name="firstName"
             placeholder="Enter your first name"
             required
+			value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
 
@@ -84,6 +84,7 @@ const Signup = () => {
             name="lastName"
             placeholder="Enter your last name"
             required
+			value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
 
@@ -94,6 +95,7 @@ const Signup = () => {
             name="email"
             placeholder="Enter your email address"
             required
+			value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
@@ -104,13 +106,13 @@ const Signup = () => {
             name="password"
             placeholder="Enter your password"
             required
+			value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
 
           <button
             type="submit"
             className="signup-btn"
-            onClick={(e) => handleSubmit(e)}
           >
             Sign Up
           </button>
@@ -123,7 +125,7 @@ const Signup = () => {
           </Link>
         </p>
 
-        <div className="google-container">
+		<div className="google-container">
           <GoogleButton className="google-btn" />
         </div>
       </div>
