@@ -29,5 +29,5 @@ class AuthController:
             if user and self.user_model.check_password(user['password'], password):
                 session['isLogin'] = True
                 session['email'] = user['email']
-                return jsonify({"message": "Login successful"}), 201
-            return jsonify({"error": "Invalid email or password"}), 400
+                return jsonify({"message": "Login successful", "status": "success"}), 201
+            return jsonify({"error": "Invalid email or password", "status":"error"}), 400

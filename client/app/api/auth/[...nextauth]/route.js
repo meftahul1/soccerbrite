@@ -18,7 +18,7 @@ export const authOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         try {
-          const res = await fetch("http://127.0.0.1:5000/api/auth/login", {
+          const res = await fetch("http://127.0.0.1:5000/api/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -27,10 +27,10 @@ export const authOptions = {
             }),
           });
 
-          const user = await res.json();
+          const data = await res.json();
 
-          if (res.ok && user) {
-            return user;
+          if (res.ok && data.status === "success") {
+            return { email: credentials.email };
           }
           return null;
         } catch (error) {
@@ -40,7 +40,20 @@ export const authOptions = {
       },
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.user = user;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user = token.user;
+      return session;
+    },
     // Customize redirect behavior
     async redirect({ url, baseUrl }) {
       console.log("Redirect Callback", { url, baseUrl });

@@ -23,3 +23,4 @@ class User:
 
     def check_password(self, stored_password, password):
         return check_password_hash(stored_password, password)
+    

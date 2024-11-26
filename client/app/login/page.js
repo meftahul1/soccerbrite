@@ -1,15 +1,15 @@
 "use client";
-import Image from 'next/image'; 
-// SoccerBriteLanding.jsx 
-import React, { useState } from 'react';
-import '../Home.css';
-import Link from 'next/link';
-import GoogleButton from '../_components/GoogleButton';
-import { useSession } from "next-auth/react";
+import Image from "next/image";
+// SoccerBriteLanding.jsx
+import React, { useState } from "react";
+import "../Home.css";
+import Link from "next/link";
+import GoogleButton from "../_components/GoogleButton";
+import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 const Login = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { push } = useRouter();
@@ -28,24 +28,22 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://127.0.0.1:5000/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
       });
-      if (res.ok) {
-        push("/");
+
+      if (result?.error) {
+        console.error("Login error:", result.error);
       } else {
-        console.error("Failed to login");
+        push("/");
       }
     } catch (error) {
       console.error("Login error:", error);
     }
   };
-  
+
   return (
     <>
       <div className="nav">
@@ -59,7 +57,7 @@ const Login = () => {
       <div className="signup-container">
         <h1>Welcome to SoccerBrite</h1>
         <h2>Enter Credentials to Log In</h2>
-    
+
         <form className="signup-form" onSubmit={handleSubmit}>
           <label htmlFor="email">Email Address</label>
           <input
@@ -68,7 +66,7 @@ const Login = () => {
             name="email"
             placeholder="Enter your email address"
             required
-			value={email}
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
@@ -79,7 +77,7 @@ const Login = () => {
             name="password"
             placeholder="Enter your password"
             required
-			value={password}
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
 
@@ -95,7 +93,7 @@ const Login = () => {
         </div>
 
         <div className="google-container">
-          <GoogleButton className='google-btn'/>
+          <GoogleButton className="google-btn" />
         </div>
 
         <p className="join">
@@ -106,9 +104,8 @@ const Login = () => {
         </p>
 
         <div className="google-container">
-          <GoogleButton className='google-btn'/>
+          <GoogleButton className="google-btn" />
         </div>
-
       </div>
     </>
   );
