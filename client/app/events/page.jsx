@@ -6,7 +6,7 @@ import useEvents from "../hooks/useEvents";
 import "./events.css";
 
 const Events = () => {
-  const { events, deleteEvent } = useEvents(); 
+  const { events, deleteEvent } = useEvents();
 
   const handleSignUp = (id) => {
     console.log(`Signed up for event with ID: ${id}`);
@@ -19,6 +19,7 @@ const Events = () => {
 
   const handleEditEvent = (id) => {
     console.log(`Editing event with ID: ${id}`);
+    // Navigate to the edit page with the event ID
   };
 
   const handleDeleteEvent = (id) => {
@@ -51,6 +52,7 @@ const Events = () => {
               <h2>{event.name}</h2>
               <p>{event.description}</p>
               <p><strong>Date:</strong> {event.date}</p>
+              <p><strong>Time:</strong> {event.startTime} - {event.endTime}</p> {/* Display time */}
               <p><strong>Location:</strong> {event.location}</p>
               <p><strong>Spots:</strong> {event.spots}</p>
               <div className="event-actions">
@@ -66,12 +68,11 @@ const Events = () => {
                 >
                   Cancel Registration
                 </button>
-                <button
-                  className="event-btn edit-event"
-                  onClick={() => handleEditEvent(event.id)}
-                >
-                  Edit Event
-                </button>
+                  <button
+                    className="event-btn edit-event"
+                  >
+                    Edit Event
+                  </button>
                 <button
                   className="event-btn delete-event"
                   onClick={() => handleDeleteEvent(event.id)}
