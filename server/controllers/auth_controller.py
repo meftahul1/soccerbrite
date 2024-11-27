@@ -27,7 +27,22 @@ class AuthController:
             password = data.get("password")
             user = self.user_model.find_user(email)
             if user and self.user_model.check_password(user['password'], password):
-                session['isLogin'] = True
-                session['email'] = user['email']
                 return jsonify({"message": "Login successful", "status": "success"}), 201
             return jsonify({"error": "Invalid email or password", "status":"error"}), 400
+        
+        
+        @self.app.route('/api/google-login', methods=['POST'])
+        def google_login():
+            data = request.json
+            email = data.get("email")
+            name = data.get("name")
+            try:
+                user = self.user_model.find_user(email)
+                if user:
+                    return jsonify({"message": "Login successful", "status": "success"}), 201
+                else:
+                    first_name, last_name = name.split(" ")
+                    user = self.user_model.create_user(first_name, last_name, email, "")
+                    return jsonify({"message": "User created successfully", "status": "success"}), 201
+            except Exception as e:
+                return jsonify({"error": "Internal server error", "status":"error"}), 500

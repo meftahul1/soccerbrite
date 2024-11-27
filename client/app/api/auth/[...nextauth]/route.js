@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import Signup from "@/app/signup/page";
 
 export const authOptions = {
   providers: [
@@ -54,15 +55,10 @@ export const authOptions = {
       session.user = token.user;
       return session;
     },
-    // Customize redirect behavior
-    async redirect({ url, baseUrl }) {
-      console.log("Redirect Callback", { url, baseUrl });
-      return url.startsWith(baseUrl) ? baseUrl : url; // Restrict to same-origin
-    },
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         try {
-          const res = await fetch("http://127.0.0.1:5000/api/auth/google", {
+          const res = await fetch("http://127.0.0.1:5000/api/google-login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -79,6 +75,24 @@ export const authOptions = {
         }
       }
       return true;
+    },
+    async signUp({ user }) {
+      try {
+        const res = await fetch("http://127.0.0.1:5000/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: user.email,
+            name: user.name,
+          }),
+        });
+
+        if (!res.ok) return false;
+        return true;
+      } catch (error) {
+        console.error("Signup error:", error);
+        return false;
+      }
     },
   },
 };

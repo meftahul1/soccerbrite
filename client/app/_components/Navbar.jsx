@@ -4,7 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import icon from "../../images/menu_icon.svg";
 import cross from "../../images/cross_icon.svg";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { redirect } from "next/dist/server/api-utils";
 
 const Navbar = () => {
   const [showMenu, setshowMenu] = useState(false);
@@ -23,6 +24,11 @@ const Navbar = () => {
     };
   }, [showMenu]);
 
+  const handleSignOut = async (e) => {
+    e.preventDefault();
+    const result = await signOut({ redirect: false, callbackUrl: "/" });
+  };
+
   return (
     <div className="absolute top-0 left-0 w-full z-10">
       <div className="container mx-auto flex justify-between items-center py-4 px-6 md:px-20 lg:px-32 bg-transparent">
@@ -32,11 +38,19 @@ const Navbar = () => {
           SoccerBrite
         </h1>
         {session ? (
-          <Link href="/dashboard">
-            <button className="hidden md:block bg-white px-8 py-2 rounded-full transition hover:bg-gray-200">
-              Dashboard
+          <>
+            <Link href="/dashboard">
+              <button className="hidden md:block bg-white px-8 py-2 rounded-full transition hover:bg-gray-200">
+                Dashboard
+              </button>
+            </Link>
+            <button
+              className="hidden md:block bg-white px-8 py-2 rounded-full transition hover:bg-gray-200"
+              onClick={(e) => handleSignOut(e)}
+            >
+              Log Out
             </button>
-          </Link>
+          </>
         ) : (
           <Link href="/login">
             <button className="hidden md:block bg-white px-8 py-2 rounded-full transition hover:bg-gray-200">
