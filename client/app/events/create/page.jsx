@@ -34,17 +34,18 @@ const CreateEvent = () => {
 
   return (
     <div className="create-event-layout">
-      {/* Sidebar */}
-      <div className="sidebar">
-        <h2 className="sidebar-title">Dashboard</h2>
-        <ul className="sidebar-menu">
-          <li><a href="/events">Events</a></li>
-          <li><a href="/calendar">Calendar</a></li>
-          <li><a href="/">Log Out</a></li>
-        </ul>
-      </div>
+      <aside className="sidebar">
+        <div className="logo-section">
+          <h1>SoccerBrite</h1>
+        </div>
+        <nav className="nav-links">
+          <Link href="/user-homepage">Home</Link>
+          <Link href="/events" className="active">Events</Link>
+          <Link href="/calendar">Calendar</Link>
+          <Link href="/">Log Out</Link>
+        </nav>
+      </aside>
 
-      {/* Main Content */}
       <div className="create-event-form-container">
         <h1>Create a New Event</h1>
         <form onSubmit={handleSubmit} className="create-event-form">

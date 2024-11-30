@@ -17,11 +17,6 @@ const Events = () => {
     console.log(`Canceled registration for event with ID: ${id}`);
   };
 
-  const handleEditEvent = (id) => {
-    console.log(`Editing event with ID: ${id}`);
-    // Navigate to the edit page with the event ID
-  };
-
   const handleDeleteEvent = (id) => {
     deleteEvent(id);
     console.log(`Deleted event with ID: ${id}`);
@@ -29,14 +24,17 @@ const Events = () => {
 
   return (
     <div className="events-layout">
-      <div className="sidebar">
-        <h2 className="sidebar-title">Dashboard</h2>
-        <ul className="sidebar-menu">
-          <li><Link href="/events">Events</Link></li>
-          <li><Link href="/calendar">Calendar</Link></li>
-          <li><Link href="/">Log Out</Link></li>
-        </ul>
-      </div>
+      <aside className="sidebar">
+        <div className="logo-section">
+          <h1>SoccerBrite</h1>
+        </div>
+        <nav className="nav-links">
+          <Link href="/user-homepage">Home</Link>
+          <Link href="/events" className="active">Events</Link>
+          <Link href="/calendar">Calendar</Link>
+          <Link href="/">Log Out</Link>
+        </nav>
+      </aside>
 
       <div className="events-content">
         <div className="header">
@@ -52,7 +50,7 @@ const Events = () => {
               <h2>{event.name}</h2>
               <p>{event.description}</p>
               <p><strong>Date:</strong> {event.date}</p>
-              <p><strong>Time:</strong> {event.startTime} - {event.endTime}</p> {/* Display time */}
+              <p><strong>Time:</strong> {event.startTime} - {event.endTime}</p> 
               <p><strong>Location:</strong> {event.location}</p>
               <p><strong>Spots:</strong> {event.spots}</p>
               <div className="event-actions">
