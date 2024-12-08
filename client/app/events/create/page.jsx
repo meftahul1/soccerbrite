@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link"; 
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -28,9 +29,20 @@ const CreateEvent = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    addEvent(formData);
+  
+    const startDateTime = new Date(`${formData.date}T${formData.startTime}`);
+    const endDateTime = new Date(`${formData.date}T${formData.endTime}`);
+  
+    const event = {
+      ...formData,
+      startDateTime,
+      endDateTime,
+    };
+  
+    addEvent(event); 
     router.push("/events");
   };
+  
 
   return (
     <div className="create-event-layout">

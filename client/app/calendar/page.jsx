@@ -9,6 +9,12 @@ const Calendar = () => {
   const { events } = useEvents();
   const [currentDate, setCurrentDate] = useState(new Date());
 
+  const normalizeDate = (date) => {
+    const normalized = new Date(date);
+    normalized.setHours(0, 0, 0, 0);
+    return normalized.toISOString().split("T")[0];
+  };
+
   const getWeekDays = (date) => {
     const startOfWeek = new Date(date);
     startOfWeek.setDate(date.getDate() - date.getDay());
@@ -51,16 +57,31 @@ const Calendar = () => {
     return days;
   };
 
+  const addOneDay = (date) => {
+    const newDate = new Date(date);
+    newDate.setDate(newDate.getDate() + 1); 
+    return newDate.toISOString().split("T")[0];
+  };  
+
   const eventsByDate = events.reduce((acc, event) => {
-    const eventKey = new Date(event.date).toISOString().split("T")[0];
+    const eventKey = normalizeDate(addOneDay(event.date));
     acc[eventKey] = acc[eventKey] || [];
     acc[eventKey].push(event);
     return acc;
   }, {});
 
   const generateTimestamps = () => {
-    return Array.from({ length: 24 }, (_, i) => `${i}:00`);
-  };
+    return Array.from({ length: 24 }, (_, i) => {
+      const period = i >= 12 ? "PM" : "AM";
+      const hour = i % 12 || 12;
+      return `${hour}:00 ${period}`;
+    });
+  };  
+
+  const timeToIndex = (time) => {
+    const [hour, minute] = time.split(":").map(Number);
+    return hour + (minute >= 30 ? 0.5 : 0); 
+  };  
 
   return (
     <div className="app-container">
@@ -89,7 +110,7 @@ const Calendar = () => {
                   <div
                     key={index}
                     className={`mini-calendar-day ${
-                      day && eventsByDate[day.toISOString().split("T")[0]] ? "has-event" : ""
+                      day && eventsByDate[normalizeDate(day)] ? "has-event" : ""
                     }`}
                   >
                     {day && <span>{day.getDate()}</span>}
@@ -102,12 +123,12 @@ const Calendar = () => {
               <h3>Upcoming Events</h3>
               <ul>
                 {events
-                  .filter((event) => new Date(event.date) >= new Date())
+                  .filter((event) => new Date(addOneDay(event.date)) >= new Date())
                   .sort((a, b) => new Date(a.date) - new Date(b.date))
                   .map((event) => (
                     <li key={event.id}>
                       <span style={{ color: event.color }}>●</span> {event.name} -{" "}
-                      {new Date(event.date).toLocaleDateString()}
+                      {new Date(addOneDay(event.date)).toLocaleDateString()}
                     </li>
                   ))}
               </ul>
@@ -139,15 +160,23 @@ const Calendar = () => {
                   </div>
                   {generateTimestamps().map((timestamp, idx) => (
                     <div key={idx} className="hour-block">
-                      {eventsByDate[day.toISOString().split("T")[0]]?.map((event) => (
-                        <div
-                          key={event.id}
-                          className="event-block"
-                          style={{ backgroundColor: event.color }}
-                        >
-                          {event.name}
-                        </div>
-                      ))}
+                      {eventsByDate[normalizeDate(day)]?.map((event) => {
+                        const eventStartIndex = timeToIndex(event.startTime);
+                        const eventEndIndex = timeToIndex(event.endTime);
+
+                  if (idx >= eventStartIndex && idx < eventEndIndex) {
+                    return (
+                      <div
+                        key={event.id}
+                        className="event-block"
+                        style={{ backgroundColor: event.color }}
+                      >
+                        {event.name}
+                      </div>
+                    );
+                  }
+                      return null;
+                      })}
                     </div>
                   ))}
                 </div>
