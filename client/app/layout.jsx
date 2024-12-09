@@ -1,13 +1,14 @@
-import { SessionProvider } from "next-auth/react";
+import { Provider } from "./Provider";
+import { getServerSession } from "next-auth";
 
 export default async function Layout({ children }) {
   const session = await getServerSession();
   return (
     <html>
       <body>
-        <SessionProvider session={session}>
+        <Provider session={session}>
           {children}
-        </SessionProvider>
+        </Provider>
       </body>
     </html>
   );

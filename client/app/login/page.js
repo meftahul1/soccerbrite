@@ -1,14 +1,19 @@
 "use client";
-import Image from 'next/image'; 
-// SoccerBriteLanding.jsx 
-import React from 'react';
-import '../Home.css';
-import Link from 'next/link';
-import GoogleButton from '../_components/GoogleButton';
-
+import Image from "next/image";
+// SoccerBriteLanding.jsx
+import React, { useState } from "react";
+import "../Home.css";
+import Link from "next/link";
+import GoogleButton from "../_components/GoogleButton";
+import { useSession, signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { push } = useRouter();
+
   if (session) {
     return (
       <div className="login-container">
@@ -19,6 +24,26 @@ const Login = () => {
       </div>
     );
   }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        console.error("Login error:", result.error);
+      } else {
+        push("/");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+    }
+  };
+
   return (
     <>
       <div className="nav">
@@ -32,8 +57,8 @@ const Login = () => {
       <div className="signup-container">
         <h1>Welcome to SoccerBrite</h1>
         <h2>Enter Credentials to Log In</h2>
-    
-        <form className="signup-form">
+
+        <form className="signup-form" onSubmit={handleSubmit}>
           <label htmlFor="email">Email Address</label>
           <input
             type="email"
@@ -41,6 +66,8 @@ const Login = () => {
             name="email"
             placeholder="Enter your email address"
             required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <label htmlFor="password">Password</label>
@@ -50,6 +77,8 @@ const Login = () => {
             name="password"
             placeholder="Enter your password"
             required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
           />
 
           <button type="submit" className="signup-btn">
@@ -64,7 +93,7 @@ const Login = () => {
         </div>
 
         <div className="google-container">
-          <GoogleButton className='google-btn'/>
+          <GoogleButton className="google-btn" />
         </div>
 
         <p className="join">
@@ -75,9 +104,8 @@ const Login = () => {
         </p>
 
         <div className="google-container">
-          <GoogleButton className='google-btn'/>
+          <GoogleButton className="google-btn" />
         </div>
-
       </div>
     </>
   );

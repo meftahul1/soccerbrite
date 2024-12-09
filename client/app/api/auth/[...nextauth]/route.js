@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
+import Signup from "@/app/signup/page";
 
 export const authOptions = {
   providers: [
@@ -18,7 +19,7 @@ export const authOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         try {
-          const res = await fetch("http://127.0.0.1:5000/api/auth/login", {
+          const res = await fetch("http://127.0.0.1:5000/api/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -27,10 +28,10 @@ export const authOptions = {
             }),
           });
 
-          const user = await res.json();
+          const data = await res.json();
 
-          if (res.ok && user) {
-            return user;
+          if (res.ok && data.status === "success") {
+            return { email: credentials.email };
           }
           return null;
         } catch (error) {
@@ -40,16 +41,24 @@ export const authOptions = {
       },
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    // Customize redirect behavior
-    async redirect({ url, baseUrl }) {
-      console.log("Redirect Callback", { url, baseUrl });
-      return url.startsWith(baseUrl) ? baseUrl : url; // Restrict to same-origin
+    async jwt({ token, user }) {
+      if (user) {
+        token.user = user;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user = token.user;
+      return session;
     },
     async signIn({ user, account }) {
       if (account?.provider === "google") {
         try {
-          const res = await fetch("http://127.0.0.1:5000/api/auth/google", {
+          const res = await fetch("http://127.0.0.1:5000/api/google-login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -66,6 +75,24 @@ export const authOptions = {
         }
       }
       return true;
+    },
+    async signUp({ user }) {
+      try {
+        const res = await fetch("http://127.0.0.1:5000/api/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: user.email,
+            name: user.name,
+          }),
+        });
+
+        if (!res.ok) return false;
+        return true;
+      } catch (error) {
+        console.error("Signup error:", error);
+        return false;
+      }
     },
   },
 };
