@@ -36,7 +36,7 @@ const Signup = () => {
         body: JSON.stringify({
           firstName,
           lastName,
-		  email,
+          email,
           password
         }),
       });
@@ -73,7 +73,7 @@ const Signup = () => {
             name="firstName"
             placeholder="Enter your first name"
             required
-			value={firstName}
+            value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
 
@@ -84,7 +84,7 @@ const Signup = () => {
             name="lastName"
             placeholder="Enter your last name"
             required
-			value={lastName}
+            value={lastName}
             onChange={(e) => setLastName(e.target.value)}
           />
 
@@ -95,7 +95,7 @@ const Signup = () => {
             name="email"
             placeholder="Enter your email address"
             required
-			value={email}
+            value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
@@ -106,14 +106,11 @@ const Signup = () => {
             name="password"
             placeholder="Enter your password"
             required
-			value={password}
+            value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <button
-            type="submit"
-            className="signup-btn"
-          >
+          <button type="submit" className="signup-btn">
             Sign Up
           </button>
         </form>
