@@ -115,3 +115,26 @@ class Match:
                 }
             }
         }))
+    
+    def get_upcoming_user_matches(self, user_email, date_obj):
+        print(date_obj)
+        print(user_email)
+
+        return list(self.db.find({
+            "match_date": {
+                "$gte": date_obj
+            },
+            "$or": [
+                {
+                    "participants": {
+                        "$elemMatch": {
+                            "user_email": user_email
+                        }
+                    }
+                },
+                {
+                    "organizer": user_email
+                }
+            ]
+        }))
+    

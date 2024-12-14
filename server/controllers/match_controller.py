@@ -1,6 +1,7 @@
 from flask import jsonify, request
 from models.match import Match 
 from models.user import User
+from datetime import datetime
 
 class MatchController:
     def __init__(self, app, mongo):
@@ -21,7 +22,10 @@ class MatchController:
             match_public = data.get("match_public")
             max_participants = data.get("max_participants")
 
-            match = self.match_model.create_match(match_name, match_description, match_date, 
+            # Convert string date to datetime object
+            match_date_obj = datetime.strptime(match_date, '%Y-%m-%d')
+
+            match = self.match_model.create_match(match_name, match_description, match_date_obj, 
                                                   match_time, match_location, organizer_email, 
                                                   match_public, max_participants
                                                   )
@@ -87,3 +91,16 @@ class MatchController:
             data = request.json
             match = self.match_model.update_match(match_id, data)
             return jsonify({"match": match}), 200
+        
+        @self.app.route('/api/user_upcoming_matches', methods=['POST'])
+        def get_upcoming_user_matches():
+            data = request.json
+            user_email = data.get("user_email")
+            date = data.get("date")
+            date_obj = datetime.strptime(date, '%Y-%m-%d')  # Convert string date to datetime object
+            print(user_email, date_obj)
+            matches = self.match_model.get_upcoming_user_matches(user_email, date_obj)
+            print(matches)
+            for match in matches:
+                match["_id"] = str(match["_id"])
+            return jsonify({"matches": matches}), 200
