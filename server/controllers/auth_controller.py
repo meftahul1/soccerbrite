@@ -15,10 +15,12 @@ class AuthController:
             last_name = data.get("lastName")
             email = data.get("email")
             password = data.get("password")
-            user = self.user_model.create_user(first_name, last_name, email, password)
-            if user:
+            old_user = self.user_model.find_user(email)
+            if old_user:
+                return jsonify({"error": "Email already exists"}), 400 
+            else:
+                user = self.user_model.create_user(first_name, last_name, email, password)
                 return jsonify({"message": "User created successfully"}), 201
-            return jsonify({"error": "Email already exists"}), 400
 
         @self.app.route('/api/login', methods=['POST'])
         def login():
