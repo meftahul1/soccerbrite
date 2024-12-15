@@ -2,29 +2,36 @@ import { useState, useEffect } from "react";
 
 const useEvents = () => {
   const [events, setEvents] = useState(() => {
-    // Only use localStorage when running on the client
     if (typeof window !== "undefined") {
-      return JSON.parse(localStorage.getItem("events")) || [];
+      try {
+        const storedEvents = localStorage.getItem("events");
+        return storedEvents ? JSON.parse(storedEvents) : [];
+      } catch (error) {
+        console.error("Error parsing events from localStorage:", error);
+        return [];
+      }
     }
-    return []; // Return empty array during SSR
+    return []; 
   });
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.setItem("events", JSON.stringify(events));
+      try {
+        localStorage.setItem("events", JSON.stringify(events));
+      } catch (error) {
+        console.error("Error saving events to localStorage:", error);
+      }
     }
   }, [events]);
 
   const addEvent = (newEvent) => {
     const updatedEvents = [...events, { id: Date.now(), ...newEvent }];
     setEvents(updatedEvents);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("events", JSON.stringify(updatedEvents));
-    }
   };
 
   const deleteEvent = (id) => {
-    setEvents((prevEvents) => prevEvents.filter((event) => event.id !== id));
+    const updatedEvents = events.filter((event) => event.id !== id);
+    setEvents(updatedEvents);
   };
 
   const updateEvent = (id, updatedData) => {
@@ -32,12 +39,16 @@ const useEvents = () => {
       event.id === id ? { ...event, ...updatedData } : event
     );
     setEvents(updatedEvents);
+  };
+
+  const clearEvents = () => {
+    setEvents([]);
     if (typeof window !== "undefined") {
-      localStorage.setItem("events", JSON.stringify(updatedEvents));
+      localStorage.removeItem("events");
     }
   };
 
-  return { events, addEvent, deleteEvent, updateEvent };
+  return { events, addEvent, deleteEvent, updateEvent, clearEvents };
 };
 
 export default useEvents;
