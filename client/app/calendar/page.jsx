@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useEvents from "../hooks/useEvents";
 import Link from "next/link";
 import "./calendar.css";
@@ -8,6 +8,7 @@ import "./calendar.css";
 const Calendar = () => {
   const { events } = useEvents();
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [highlightedDay, setHighlightedDay] = useState(new Date()); 
 
   const normalizeDate = (date) => {
     const normalized = new Date(date);
@@ -31,14 +32,12 @@ const Calendar = () => {
     const prevWeek = new Date(weekDays[0]);
     prevWeek.setDate(prevWeek.getDate() - 7);
     setWeekDays(getWeekDays(prevWeek));
-    setCurrentDate(prevWeek);
   };
 
   const handleNextWeek = () => {
     const nextWeek = new Date(weekDays[6]);
     nextWeek.setDate(nextWeek.getDate() + 1);
     setWeekDays(getWeekDays(nextWeek));
-    setCurrentDate(nextWeek);
   };
 
   const getMonthDays = (date) => {
@@ -59,9 +58,9 @@ const Calendar = () => {
 
   const addOneDay = (date) => {
     const newDate = new Date(date);
-    newDate.setDate(newDate.getDate() + 1); 
+    newDate.setDate(newDate.getDate() + 1);
     return newDate.toISOString().split("T")[0];
-  };  
+  };
 
   const eventsByDate = events.reduce((acc, event) => {
     const eventKey = normalizeDate(addOneDay(event.date));
@@ -76,12 +75,20 @@ const Calendar = () => {
       const hour = i % 12 || 12;
       return `${hour}:00 ${period}`;
     });
-  };  
+  };
 
   const timeToIndex = (time) => {
     const [hour, minute] = time.split(":").map(Number);
-    return hour + (minute >= 30 ? 0.5 : 0); 
-  };  
+    return hour + (minute >= 30 ? 0.5 : 0);
+  };
+
+  useEffect(() => {
+    setCurrentDate(new Date()); 
+  }, []);
+
+  const handleDayClick = (day) => {
+    setHighlightedDay(day); 
+  };
 
   return (
     <div className="app-container">
@@ -92,7 +99,9 @@ const Calendar = () => {
         <nav className="nav-links">
           <Link href="/user-homepage">Home</Link>
           <Link href="/events">Events</Link>
-          <Link href="/calendar" className="active">Calendar</Link>
+          <Link href="/calendar" className="active">
+            Calendar
+          </Link>
           <Link href="/">Log Out</Link>
         </nav>
       </aside>
@@ -104,18 +113,39 @@ const Calendar = () => {
         <div className="calendar-section">
           <div className="calendar-left">
             <div className="mini-calendar">
-              <h3>{currentDate.toLocaleString("default", { month: "long" })}</h3>
+              <h3>
+                {currentDate.toLocaleString("default", { month: "long" })}
+              </h3>
               <div className="mini-calendar-grid">
-                {getMonthDays(currentDate).map((day, index) => (
-                  <div
-                    key={index}
-                    className={`mini-calendar-day ${
-                      day && eventsByDate[normalizeDate(day)] ? "has-event" : ""
-                    }`}
-                  >
-                    {day && <span>{day.getDate()}</span>}
-                  </div>
-                ))}
+                {getMonthDays(currentDate).map((day, index) => {
+                  const isCurrentDay =
+                    day &&
+                    day.getDate() === currentDate.getDate() &&
+                    day.getMonth() === currentDate.getMonth() &&
+                    day.getFullYear() === currentDate.getFullYear();
+
+                  const isHighlightedDay =
+                    day &&
+                    day.getDate() === highlightedDay.getDate() &&
+                    day.getMonth() === highlightedDay.getMonth() &&
+                    day.getFullYear() === highlightedDay.getFullYear();
+
+                  return (
+                    <div
+                      key={index}
+                      className={`mini-calendar-day ${
+                        isHighlightedDay ? "highlighted-day" : ""
+                      } ${
+                        day && eventsByDate[normalizeDate(day)]
+                          ? "has-event"
+                          : ""
+                      }`}
+                      onClick={() => handleDayClick(day)}
+                    >
+                      {day && <span>{day.getDate()}</span>}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
@@ -123,12 +153,14 @@ const Calendar = () => {
               <h3>Upcoming Events</h3>
               <ul>
                 {events
-                  .filter((event) => new Date(addOneDay(event.date)) >= new Date())
+                  .filter(
+                    (event) => new Date(addOneDay(event.date)) >= new Date()
+                  )
                   .sort((a, b) => new Date(a.date) - new Date(b.date))
                   .map((event) => (
                     <li key={event.id}>
-                      <span style={{ color: event.color }}>●</span> {event.name} -{" "}
-                      {new Date(addOneDay(event.date)).toLocaleDateString()}
+                      <span style={{ color: event.color }}>●</span> {event.name}{" "}
+                      - {new Date(addOneDay(event.date)).toLocaleDateString()}
                     </li>
                   ))}
               </ul>
@@ -139,7 +171,8 @@ const Calendar = () => {
             <div className="calendar-header">
               <button onClick={handlePrevWeek}>&lt;</button>
               <h2>
-                {currentDate.toLocaleString("default", { month: "long" })} {currentDate.getFullYear()}
+                {currentDate.toLocaleString("default", { month: "long" })}{" "}
+                {currentDate.getFullYear()}
               </h2>
               <button onClick={handleNextWeek}>&gt;</button>
             </div>
@@ -155,7 +188,9 @@ const Calendar = () => {
               {weekDays.map((day, index) => (
                 <div key={index} className="day-column">
                   <div className="day-header">
-                    <div className="day-of-week">{day.toLocaleString("default", { weekday: "short" })}</div>
+                    <div className="day-of-week">
+                      {day.toLocaleString("default", { weekday: "short" })}
+                    </div>
                     <div className="day-of-month">{day.getDate()}</div>
                   </div>
                   {generateTimestamps().map((timestamp, idx) => (
@@ -164,18 +199,18 @@ const Calendar = () => {
                         const eventStartIndex = timeToIndex(event.startTime);
                         const eventEndIndex = timeToIndex(event.endTime);
 
-                  if (idx >= eventStartIndex && idx < eventEndIndex) {
-                    return (
-                      <div
-                        key={event.id}
-                        className="event-block"
-                        style={{ backgroundColor: event.color }}
-                      >
-                        {event.name}
-                      </div>
-                    );
-                  }
-                      return null;
+                        if (idx >= eventStartIndex && idx < eventEndIndex) {
+                          return (
+                            <div
+                              key={event.id}
+                              className="event-block"
+                              style={{ backgroundColor: event.color }}
+                            >
+                              {event.name}
+                            </div>
+                          );
+                        }
+                        return null;
                       })}
                     </div>
                   ))}

@@ -106,6 +106,7 @@ body {
   
   .sidebar {
     width: 200px;
+    height: 150vh;
     background-color: #2c3e50;
     color: #ecf0f1;
     display: flex;
