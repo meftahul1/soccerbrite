@@ -1,11 +1,22 @@
 "use client";
-import Link from "next/link"; 
+import Link from "next/link";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import useEvents from "../../hooks/useEvents";
 import "./createEvent.css";
+import MatchForm from "../../_components/MatchForm";
+const mapContainerStyle = {
+  width: "100%",
+  height: "400px",
+  marginTop: "1rem",
+  borderRadius: "0.5rem",
+};
 
+const defaultCenter = {
+  lat: 40.7128,
+  lng: -74.006,
+};
 const CreateEvent = () => {
   const { addEvent } = useEvents();
   const router = useRouter();
@@ -29,20 +40,19 @@ const CreateEvent = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     const startDateTime = new Date(`${formData.date}T${formData.startTime}`);
     const endDateTime = new Date(`${formData.date}T${formData.endTime}`);
-  
+
     const event = {
       ...formData,
       startDateTime,
       endDateTime,
     };
-  
-    addEvent(event); 
+
+    addEvent(event);
     router.push("/events");
   };
-  
 
   return (
     <div className="create-event-layout">
@@ -52,95 +62,19 @@ const CreateEvent = () => {
         </div>
         <nav className="nav-links">
           <Link href="/user-homepage">Home</Link>
-          <Link href="/events" className="active">Events</Link>
+          <Link href="/events" className="active">
+            Events
+          </Link>
           <Link href="/calendar">Calendar</Link>
           <Link href="/">Log Out</Link>
         </nav>
       </aside>
 
       <div className="create-event-form-container">
-        <h1>Create a New Event</h1>
-        <form onSubmit={handleSubmit} className="create-event-form">
-          <div className="form-group">
-            <label htmlFor="name">Event Name:</label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="description">Description:</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-            ></textarea>
-          </div>
-          <div className="form-group">
-            <label htmlFor="date">Date:</label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="startTime">Start Time:</label>
-            <input
-              type="time"
-              id="startTime"
-              name="startTime"
-              value={formData.startTime}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="endTime">End Time:</label>
-            <input
-              type="time"
-              id="endTime"
-              name="endTime"
-              value={formData.endTime}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="location">Location:</label>
-            <input
-              type="text"
-              id="location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="spots">Available Spots:</label>
-            <input
-              type="number"
-              id="spots"
-              name="spots"
-              value={formData.spots}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <button type="submit" className="submit-btn">
-            Create Event
-          </button>
-        </form>
+        <MatchForm
+          mapContainerStyle={mapContainerStyle}
+          defaultCenter={defaultCenter}
+        />
       </div>
     </div>
   );

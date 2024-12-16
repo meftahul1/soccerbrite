@@ -1,54 +1,100 @@
-import { useState, useEffect } from "react";
+"use client";
+import { useState, useEffect, useCallback } from "react";
+import { useSession } from "next-auth/react";
 
 const useEvents = () => {
-  const [events, setEvents] = useState(() => {
-    if (typeof window !== "undefined") {
-      try {
-        const storedEvents = localStorage.getItem("events");
-        return storedEvents ? JSON.parse(storedEvents) : [];
-      } catch (error) {
-        console.error("Error parsing events from localStorage:", error);
-        return [];
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: session, status } = useSession(); // Add status
+
+  const fetchEvents = useCallback(async () => {
+    if (status !== "authenticated") return;
+
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/matches`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_email: session?.user?.email,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch events");
       }
+
+      const data = await response.json();
+      setEvents(data.matches || []);
+    } catch (error) {
+      console.error("Error fetching events:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
     }
-    return []; 
-  });
+  }, [status, session?.user?.email]);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.setItem("events", JSON.stringify(events));
-      } catch (error) {
-        console.error("Error saving events to localStorage:", error);
+    if (status === "authenticated") {
+      // Check status instead of session?.user?.email
+      fetchEvents();
+    }
+  }, [fetchEvents, status]); // Update dependency
+
+  const createEvent = async (formData) => {
+    if (status !== "authenticated") {
+      setError("You must be logged in to create an event");
+      return false;
+    }
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/create-match`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...formData,
+            organizer_email: session?.user?.email,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to create match");
       }
-    }
-  }, [events]);
 
-  const addEvent = (newEvent) => {
-    const updatedEvents = [...events, { id: Date.now(), ...newEvent }];
-    setEvents(updatedEvents);
-  };
-
-  const deleteEvent = (id) => {
-    const updatedEvents = events.filter((event) => event.id !== id);
-    setEvents(updatedEvents);
-  };
-
-  const updateEvent = (id, updatedData) => {
-    const updatedEvents = events.map((event) =>
-      event.id === id ? { ...event, ...updatedData } : event
-    );
-    setEvents(updatedEvents);
-  };
-
-  const clearEvents = () => {
-    setEvents([]);
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("events");
+      await fetchEvents();
+      return true;
+    } catch (err) {
+      setError(err.message);
+      return false;
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  return { events, addEvent, deleteEvent, updateEvent, clearEvents };
+  return {
+    events,
+    loading,
+    error,
+    isSubmitting,
+    createEvent,
+    fetchEvents,
+    isAuthenticated: status === "authenticated",
+  };
 };
 
 export default useEvents;
