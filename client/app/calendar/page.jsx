@@ -6,6 +6,7 @@ import useEvents from "../hooks/useEvents";
 import Link from "next/link";
 import "./calendar.css";
 import EventDetails from "../_components/EventDetails";
+import SideBar from "../_components/SideBar";
 
 const Calendar = () => {
   const { events } = useEvents();
@@ -114,19 +115,7 @@ const Calendar = () => {
 
   return (
     <div className="app-container">
-      <aside className="sidebar">
-        <div className="logo-section">
-          <h1>SoccerBrite</h1>
-        </div>
-        <nav className="nav-links">
-          <Link href="/user-homepage">Home</Link>
-          <Link href="/events">Events</Link>
-          <Link href="/calendar" className="active">
-            Calendar
-          </Link>
-          <Link href="/">Log Out</Link>
-        </nav>
-      </aside>
+      <SideBar selected="calendar" />
 
       <main className="main-content">
         <div className="header">

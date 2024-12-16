@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import useEvents from "../hooks/useEvents";
 import "./events.css";
+import SideBar from "../_components/SideBar";
 
 const Events = () => {
   const { events } = useEvents();
@@ -24,19 +25,7 @@ const Events = () => {
 
   return (
     <div className="events-layout">
-      <aside className="sidebar">
-        <div className="logo-section">
-          <h1>SoccerBrite</h1>
-        </div>
-        <nav className="nav-links">
-          <Link href="/user-homepage">Home</Link>
-          <Link href="/events" className="active">
-            Events
-          </Link>
-          <Link href="/calendar">Calendar</Link>
-          <Link href="/">Log Out</Link>
-        </nav>
-      </aside>
+      <SideBar selected="events" />
 
       <div className="events-content">
         <div className="header">
