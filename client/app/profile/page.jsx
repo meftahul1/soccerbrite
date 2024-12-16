@@ -58,7 +58,7 @@ function EventCard({ event }) {
         <div className="flex items-center gap-3 text-gray-600">
           <FaUsers className="w-4 h-4 flex-shrink-0" />
           <span>
-            {event.current_players} / {event.max_players} participants
+            {event.current_players} - {event.max_players} participants
           </span>
         </div>
       </div>

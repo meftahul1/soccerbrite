@@ -1,14 +1,30 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import useEvents from "../hooks/useEvents";
 import Link from "next/link";
 import "./calendar.css";
+import EventDetails from "../_components/EventDetails";
 
 const Calendar = () => {
   const { events } = useEvents();
+  const { data: session } = useSession();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [highlightedDay, setHighlightedDay] = useState(new Date());
+
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleOpenModal = (event) => {
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(null);
+  };
 
   const normalizeDate = (date) => {
     const normalized = new Date(date);
@@ -166,7 +182,11 @@ const Calendar = () => {
                   )
                   .sort((a, b) => new Date(a.date) - new Date(b.date))
                   .map((event) => (
-                    <li key={event._id}>
+                    <li
+                      key={event._id}
+                      onClick={() => handleOpenModal(event)}
+                      className="cursor-pointer hover:bg-gray-100 p-2 rounded transition-colors"
+                    >
                       <span style={{ color: event.color }}>●</span>{" "}
                       {event.match_name} -{" "}
                       {new Date(
@@ -216,6 +236,7 @@ const Calendar = () => {
                               key={event._id}
                               className="event-block"
                               style={{ backgroundColor: event.color }}
+                              onClick={() => handleOpenModal(event)}
                             >
                               {event.match_name}
                             </div>
@@ -231,6 +252,18 @@ const Calendar = () => {
           </div>
         </div>
       </main>
+      {selectedEvent && (
+        <EventDetails
+          event={selectedEvent}
+          status={
+            selectedEvent.organizer === session?.user?.email
+              ? "organizer"
+              : "registered"
+          }
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+        />
+      )}
     </div>
   );
 };
