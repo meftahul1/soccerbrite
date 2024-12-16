@@ -7,9 +7,11 @@ const useEvents = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession(); // Add status
 
   const fetchEvents = useCallback(async () => {
+    if (status !== "authenticated") return;
+
     setLoading(true);
     try {
       const response = await fetch(
@@ -37,15 +39,21 @@ const useEvents = () => {
     } finally {
       setLoading(false);
     }
-  }, [session]);
+  }, [status, session?.user?.email]);
 
   useEffect(() => {
-    if (session?.user?.email) {
+    if (status === "authenticated") {
+      // Check status instead of session?.user?.email
       fetchEvents();
     }
-  }, [fetchEvents, session]);
+  }, [fetchEvents, status]); // Update dependency
 
   const createEvent = async (formData) => {
+    if (status !== "authenticated") {
+      setError("You must be logged in to create an event");
+      return false;
+    }
+
     setIsSubmitting(true);
     setError("");
 
@@ -68,7 +76,7 @@ const useEvents = () => {
         throw new Error("Failed to create match");
       }
 
-      await fetchEvents(); // Refresh the events list
+      await fetchEvents();
       return true;
     } catch (err) {
       setError(err.message);
@@ -85,6 +93,7 @@ const useEvents = () => {
     isSubmitting,
     createEvent,
     fetchEvents,
+    isAuthenticated: status === "authenticated",
   };
 };
 

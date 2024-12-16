@@ -8,7 +8,7 @@ import "./calendar.css";
 const Calendar = () => {
   const { events } = useEvents();
   const [currentDate, setCurrentDate] = useState(new Date());
-  const [highlightedDay, setHighlightedDay] = useState(new Date()); 
+  const [highlightedDay, setHighlightedDay] = useState(new Date());
 
   const normalizeDate = (date) => {
     const normalized = new Date(date);
@@ -26,18 +26,20 @@ const Calendar = () => {
     });
   };
 
-  const [weekDays, setWeekDays] = useState(getWeekDays(currentDate));
+  const [weekDays, setWeekDays] = useState([]);
 
   const handlePrevWeek = () => {
     const prevWeek = new Date(weekDays[0]);
     prevWeek.setDate(prevWeek.getDate() - 7);
     setWeekDays(getWeekDays(prevWeek));
+    setCurrentDate(prevWeek); // Add this line to update currentDate
   };
 
   const handleNextWeek = () => {
     const nextWeek = new Date(weekDays[6]);
     nextWeek.setDate(nextWeek.getDate() + 1);
     setWeekDays(getWeekDays(nextWeek));
+    setCurrentDate(nextWeek); // Add this line to update currentDate
   };
 
   const getMonthDays = (date) => {
@@ -63,7 +65,7 @@ const Calendar = () => {
   };
 
   const eventsByDate = events.reduce((acc, event) => {
-    const eventKey = normalizeDate(addOneDay(event.date));
+    const eventKey = normalizeDate(addOneDay(event.match_date));
     acc[eventKey] = acc[eventKey] || [];
     acc[eventKey].push(event);
     return acc;
@@ -83,11 +85,15 @@ const Calendar = () => {
   };
 
   useEffect(() => {
-    setCurrentDate(new Date()); 
+    setCurrentDate(new Date());
   }, []);
 
+  useEffect(() => {
+    setWeekDays(getWeekDays(currentDate));
+  }, [currentDate]);
+
   const handleDayClick = (day) => {
-    setHighlightedDay(day); 
+    setHighlightedDay(day);
   };
 
   return (
@@ -118,6 +124,7 @@ const Calendar = () => {
               </h3>
               <div className="mini-calendar-grid">
                 {getMonthDays(currentDate).map((day, index) => {
+                  const uniqueKey = day ? day.toISOString() : `empty-${index}`;
                   const isCurrentDay =
                     day &&
                     day.getDate() === currentDate.getDate() &&
@@ -132,7 +139,7 @@ const Calendar = () => {
 
                   return (
                     <div
-                      key={index}
+                      key={uniqueKey}
                       className={`mini-calendar-day ${
                         isHighlightedDay ? "highlighted-day" : ""
                       } ${
@@ -154,13 +161,17 @@ const Calendar = () => {
               <ul>
                 {events
                   .filter(
-                    (event) => new Date(addOneDay(event.date)) >= new Date()
+                    (event) =>
+                      new Date(addOneDay(event.match_date)) >= new Date()
                   )
                   .sort((a, b) => new Date(a.date) - new Date(b.date))
                   .map((event) => (
-                    <li key={event.id}>
-                      <span style={{ color: event.color }}>●</span> {event.name}{" "}
-                      - {new Date(addOneDay(event.date)).toLocaleDateString()}
+                    <li key={event._id}>
+                      <span style={{ color: event.color }}>●</span>{" "}
+                      {event.match_name} -{" "}
+                      {new Date(
+                        addOneDay(event.match_date)
+                      ).toLocaleDateString()}
                     </li>
                   ))}
               </ul>
@@ -179,14 +190,14 @@ const Calendar = () => {
             <div className="calendar-week-view">
               <div className="timestamps">
                 {generateTimestamps().map((timestamp, index) => (
-                  <div key={index} className="timestamp">
+                  <div key={`timestamp-${timestamp}`} className="timestamp">
                     {timestamp}
                   </div>
                 ))}
               </div>
 
               {weekDays.map((day, index) => (
-                <div key={index} className="day-column">
+                <div key={day.toISOString()} className="day-column">
                   <div className="day-header">
                     <div className="day-of-week">
                       {day.toLocaleString("default", { weekday: "short" })}
@@ -194,19 +205,19 @@ const Calendar = () => {
                     <div className="day-of-month">{day.getDate()}</div>
                   </div>
                   {generateTimestamps().map((timestamp, idx) => (
-                    <div key={idx} className="hour-block">
+                    <div key={`timestamp-${timestamp}`} className="hour-block">
                       {eventsByDate[normalizeDate(day)]?.map((event) => {
-                        const eventStartIndex = timeToIndex(event.startTime);
-                        const eventEndIndex = timeToIndex(event.endTime);
+                        const eventStartIndex = timeToIndex(event.match_time);
+                        const eventEndIndex = timeToIndex(event.match_endTime);
 
                         if (idx >= eventStartIndex && idx < eventEndIndex) {
                           return (
                             <div
-                              key={event.id}
+                              key={event._id}
                               className="event-block"
                               style={{ backgroundColor: event.color }}
                             >
-                              {event.name}
+                              {event.match_name}
                             </div>
                           );
                         }
