@@ -4,12 +4,13 @@ class Match:
     def __init__(self, mongo):
         self.db = mongo.myDatabase.matches
 
-    def create_match(self, match_name, match_description, match_date, match_time, match_location, organizer_email, match_public, max_participants):
+    def create_match(self, match_name, match_description, match_date, match_startTime, match_endTime, match_location, organizer_email, match_public, max_participants):
         match = {
             "match_name": match_name,
             "match_description": match_description,
             "match_date": match_date,
-            "match_time": match_time,
+            "match_time": match_startTime,
+            "match_endTime": match_endTime,
             "match_location": {
                 "name": match_location["name"],
                 "address": match_location["address"],
@@ -124,6 +125,22 @@ class Match:
             "match_date": {
                 "$gte": date_obj
             },
+            "$or": [
+                {
+                    "participants": {
+                        "$elemMatch": {
+                            "user_email": user_email
+                        }
+                    }
+                },
+                {
+                    "organizer": user_email
+                }
+            ]
+        }))
+    
+    def get_user_matches(self, user_email):
+        return list(self.db.find({
             "$or": [
                 {
                     "participants": {

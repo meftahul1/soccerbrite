@@ -16,7 +16,8 @@ class MatchController:
             match_name = data.get("match_name")
             match_description = data.get("match_description")
             match_date = data.get("match_date")
-            match_time = data.get("match_time")
+            match_startTime = data.get("match_startTime")
+            match_endTime = data.get("match_endTime")
             match_location = data.get("match_location")  # {'name': 'location name', 'address': 'location address', 'lat': ..., 'lng': ...}
             organizer_email = data.get("organizer_email")
             match_public = data.get("match_public")
@@ -26,8 +27,8 @@ class MatchController:
             match_date_obj = datetime.strptime(match_date, '%Y-%m-%d')
 
             match = self.match_model.create_match(match_name, match_description, match_date_obj, 
-                                                  match_time, match_location, organizer_email, 
-                                                  match_public, max_participants
+                                                  match_startTime, match_endTime, match_location, 
+                                                  organizer_email, match_public, max_participants
                                                   )
             if match:
                 return jsonify({"message": "Match created successfully"}), 201
@@ -85,6 +86,15 @@ class MatchController:
         def get_match(match_id):
             match = self.match_model.get_match(match_id)
             return jsonify({"match": match}), 200
+        
+        @self.app.route('/api/matches', methods=['POST'])
+        def get_matches():
+            data = request.json
+            user_email = data.get("user_email")
+            matches = self.match_model.get_user_matches(user_email)
+            for match in matches:
+                match["_id"] = str(match["_id"])
+            return jsonify({"matches": matches}), 200
         
         @self.app.route('/api/match/<match_id>', methods=['PUT'])
         def update_match(match_id):

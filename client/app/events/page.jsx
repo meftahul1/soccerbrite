@@ -6,21 +6,21 @@ import useEvents from "../hooks/useEvents";
 import "./events.css";
 
 const Events = () => {
-  const { events, deleteEvent } = useEvents();
+  const { events } = useEvents();
 
   const handleSignUp = (id) => {
     console.log(`Signed up for event with ID: ${id}`);
   };
 
-  const handleCancelRegistration = (id) => {
-    deleteEvent(id);
-    console.log(`Canceled registration for event with ID: ${id}`);
-  };
+  // const handleCancelRegistration = (id) => {
+  //   deleteEvent(id);
+  //   console.log(`Canceled registration for event with ID: ${id}`);
+  // };
 
-  const handleDeleteEvent = (id) => {
-    deleteEvent(id);
-    console.log(`Deleted event with ID: ${id}`);
-  };
+  // const handleDeleteEvent = (id) => {
+  //   deleteEvent(id);
+  //   console.log(`Deleted event with ID: ${id}`);
+  // };
 
   return (
     <div className="events-layout">
@@ -30,7 +30,9 @@ const Events = () => {
         </div>
         <nav className="nav-links">
           <Link href="/user-homepage">Home</Link>
-          <Link href="/events" className="active">Events</Link>
+          <Link href="/events" className="active">
+            Events
+          </Link>
           <Link href="/calendar">Calendar</Link>
           <Link href="/">Log Out</Link>
         </nav>
@@ -46,34 +48,39 @@ const Events = () => {
 
         <div className="events-container">
           {events.map((event) => (
-            <div key={event.id} className="event-card">
-              <h2>{event.name}</h2>
-              <p>{event.description}</p>
-              <p><strong>Date:</strong> {event.date}</p>
-              <p><strong>Time:</strong> {event.startTime} - {event.endTime}</p> 
-              <p><strong>Location:</strong> {event.location}</p>
-              <p><strong>Spots:</strong> {event.spots}</p>
+            <div key={event._id} className="event-card">
+              <h2>{event.match_name}</h2>
+              <p>{event.match_description}</p>
+              <p>
+                <strong>Date:</strong> {event.match_date}
+              </p>
+              <p>
+                <strong>Time:</strong> {event.match_time}
+              </p>
+              <p>
+                <strong>Location:</strong> {event.match_location.name}
+              </p>
+              <p>
+                <strong>Spots:</strong>{" "}
+                {event.max_payers - event.current_players}
+              </p>
               <div className="event-actions">
                 <button
                   className="event-btn sign-up"
-                  onClick={() => handleSignUp(event.id)}
+                  onClick={() => handleSignUp(event._id)}
                 >
                   Sign Up
                 </button>
                 <button
                   className="event-btn cancel-registration"
-                  onClick={() => handleCancelRegistration(event.id)}
+                  onClick={() => handleCancelRegistration(event._id)}
                 >
                   Cancel Registration
                 </button>
-                  <button
-                    className="event-btn edit-event"
-                  >
-                    Edit Event
-                  </button>
+                <button className="event-btn edit-event">Edit Event</button>
                 <button
                   className="event-btn delete-event"
-                  onClick={() => handleDeleteEvent(event.id)}
+                  onClick={() => handleDeleteEvent(event._id)}
                 >
                   Delete Event
                 </button>
