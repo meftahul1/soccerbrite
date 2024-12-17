@@ -119,7 +119,7 @@ const Calendar = () => {
 
       <main className="main-content">
         <div className="header">
-          <h1>Calendar</h1>
+          <h1 className="text-3xl font-bold text-gray-900">Calendar</h1>
         </div>
         <div className="calendar-section">
           <div className="calendar-left">
