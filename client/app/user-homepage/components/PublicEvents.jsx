@@ -1,143 +1,143 @@
-"use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import left from "../../../images/left_arrow.svg";
 import right from "../../../images/right_arrow.svg";
 import useEvents from "../../hooks/useEvents";
+import Link from "next/link";
 
 const PublicEvents = () => {
-  const [currentIndex, setcurrentIndex] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [cardsToShow, setcardsToShow] = useState(1);
   const { getAllPublicEvents } = useEvents();
   const [publicEvents, setPublicEvents] = useState([]);
-
-  // @jair integrate backend and replace projectsData with the data stored in db
-  const projectsData = [
-    {
-      title: "Soccer Tournament",
-      description: "A thrilling 5v5 tournament for enthusiasts.",
-      date: "2024-12-20",
-      location: "Brooklyn, NY",
-      remainingSpots: 8,
-    },
-    {
-      title: "Futsal Tournament",
-      description: "Learn advanced soccer techniques.",
-      date: "2024-12-25",
-      location: "Queens, NY",
-      remainingSpots: 5,
-    },
-    {
-      title: "Youth League Match",
-      description: "An engaging match for young players.",
-      date: "2025-01-10",
-      location: "Manhattan, NY",
-      remainingSpots: 12,
-    },
-  ];
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const getPublicEvents = async () => {
-      const events = await getAllPublicEvents();
-      setPublicEvents(events);
+      setIsLoading(true);
+      try {
+        const events = await getAllPublicEvents();
+        setPublicEvents(events || []);
+      } catch (error) {
+        console.error("Failed to fetch events:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
     getPublicEvents();
-  }, [getAllPublicEvents]);
+  }, []);
 
   useEffect(() => {
-    console.log(publicEvents);
-    const updateCardsToShow = () => {
-      if (window.innerWidth >= 1024) {
-        setcardsToShow(publicEvents.length);
+    const updateCardsPerView = () => {
+      if (window.innerWidth >= 1280) {
+        setcardsToShow(3);
+      } else if (window.innerWidth >= 1024) {
+        setcardsToShow(2);
+      } else if (window.innerWidth >= 768) {
+        setcardsToShow(2);
       } else {
         setcardsToShow(1);
       }
     };
 
-    updateCardsToShow();
-    window.addEventListener("resize", updateCardsToShow);
-    return () => window.removeEventListener("resize", updateCardsToShow);
+    updateCardsPerView();
+    window.addEventListener("resize", updateCardsPerView);
+    return () => window.removeEventListener("resize", updateCardsPerView);
   }, []);
 
   const nextEvent = () => {
-    setcurrentIndex((prevIndex) => (prevIndex + 1) % publicEvents.length);
+    setCurrentIndex((prevIndex) => {
+      const maxIndex = Math.max(0, publicEvents.length - cardsToShow);
+      return Math.min(prevIndex + 1, maxIndex);
+    });
   };
 
   const prevEvent = () => {
-    setcurrentIndex((prevIndex) =>
-      prevIndex === 0 ? publicEvents.length - 1 : prevIndex - 1
-    );
+    setCurrentIndex((prevIndex) => Math.max(0, prevIndex - 1));
   };
 
-  return (
-    <div
-      className="container mx-auto py-4 pt-20 px-6 md:px-20 lg:px-32 my-20 w-full overflow-hidden"
-      id="Events"
-    >
-      <h1 className="text-2xl sm:text-4xl font-bold mb-2 text-center">
-        Upcoming{" "}
-        <span className="underline underline-offset-4 decoration-1 under font-light">
-          on Soccerbrite
-        </span>
-      </h1>
-      <p className="text-center text-gray-500 mb-8 max-w-80 mx-auto">
-        Explore Upcoming Events Near You
-      </p>
-
-      {/* Slider buttons */}
-      <div className="flex justify-end items-center mb-8">
-        <button
-          className="p-3 bg-gray-200 rounded mr-2"
-          aria-label="Previous Events"
-          onClick={prevEvent}
-        >
-          <Image src={left} alt="prev" />
-        </button>
-        <button
-          className="p-3 bg-gray-200 rounded"
-          aria-label="Next Events"
-          onClick={nextEvent}
-        >
-          <Image src={right} alt="next" />
-        </button>
-      </div>
-
-      {/* Project slider container */}
-      <div className="overflow-hidden">
-        <div
-          className="flex gap-8 transition-transform duration-500 ease-in-out"
-          style={{
-            transform: `translateX(-${(currentIndex * 100) / cardsToShow}%)`,
-          }}
-        >
-          {publicEvents.map((project, index) => (
-            <div key={index} className="relative flex-shrink-0 w-full sm:w-1/4">
-              <div className="bg-white border border-gray-300 rounded-lg shadow-md p-6 flex flex-col gap-4 h-full">
-                <h2 className="text-lg font-semibold text-gray-800">
-                  {project.match_name}
-                </h2>
-                <p className="text-gray-600 text-sm">
-                  {project.match_description}
-                </p>
-                <p className="text-gray-500 text-sm">
-                  <strong>Date:</strong> {project.match_date}
-                </p>
-                <p className="text-gray-500 text-sm">
-                  <strong>Location:</strong> {project.match_location.name}
-                </p>
-                <p className="text-gray-500 text-sm">
-                  <strong>Remaining Spots:</strong>{" "}
-                  {project.max_players - project.current_players}
-                </p>
-                <button className="mt-auto bg-[#3498db] text-white px-4 py-2 rounded hover:bg-[#2980b9] transition-all duration-300 ease-in-out">
-                  Join
-                </button>
-              </div>
-            </div>
-          ))}
+  if (isLoading) {
+    return (
+      <div className="py-4">
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3498db]"></div>
         </div>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <section className="py-4 mb-12">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-2xl sm:text-4xl font-bold mb-2 text-center">
+          Upcoming{" "}
+          <span className="underline underline-offset-4 decoration-1 under font-light">
+            on Soccerbrite
+          </span>
+        </h1>
+        <p className="text-center text-gray-500 mb-8 max-w-md mx-auto">
+          Explore Upcoming Events Near You
+        </p>
+
+        <div className="flex justify-end items-center mb-8">
+          <button
+            className="p-3 bg-gray-200 rounded mr-2 hover:bg-gray-300 transition-colors"
+            aria-label="Previous Events"
+            onClick={prevEvent}
+          >
+            <Image src={left} alt="prev" />
+          </button>
+          <button
+            className="p-3 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
+            aria-label="Next Events"
+            onClick={nextEvent}
+          >
+            <Image src={right} alt="next" />
+          </button>
+        </div>
+
+        <div className="overflow-hidden">
+          <div
+            className="flex gap-6 transition-transform duration-500 ease-in-out"
+            style={{
+              transform: `translateX(-${(currentIndex * 100) / cardsToShow}%)`,
+            }}
+          >
+            {publicEvents.map((event, index) => (
+              <div
+                key={index}
+                className="flex-shrink-0 w-full sm:w-1/2 lg:w-1/3"
+              >
+                <div className="bg-white border border-gray-300 rounded-lg shadow-md p-6 flex flex-col gap-4 h-full">
+                  <h2 className="text-lg font-semibold text-gray-800">
+                    {event.match_name}
+                  </h2>
+                  <p className="text-gray-600 text-sm">
+                    {event.match_description}
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    <strong>Date:</strong> {event.match_date}
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    <strong>Location:</strong> {event.match_location?.name}
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    <strong>Remaining Spots:</strong>{" "}
+                    {event.max_players - event.current_players}
+                  </p>
+                  <Link
+                    href="/events"
+                    className="mt-auto bg-[#3498db] text-white px-4 py-2 rounded hover:bg-[#2980b9] transition-all duration-300 ease-in-out text-center"
+                  >
+                    Join
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 

@@ -129,6 +129,13 @@ class Match:
             }
         }))
     
+    def get_upcoming_matches(self, date_obj):
+        return list(self.db.find({
+            "match_date": {
+                "$gte": date_obj
+            }
+        }))
+    
     def get_upcoming_user_matches(self, user_email, date_obj):
         print(date_obj)
         print(user_email)
@@ -223,6 +230,3 @@ class Match:
                     .limit(per_page))
         
         return matches, total_count
-    
-    def get_all_matches(self):
-        return list(self.db.find({}))

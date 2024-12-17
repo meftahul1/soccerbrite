@@ -338,7 +338,16 @@ const useEvents = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/all-matches`
+        `${process.env.NEXT_PUBLIC_API_URL}/api/upcoming_matches`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            date: new Date().toISOString().split("T")[0],
+          }),
+        }
       );
 
       if (!response.ok) {
