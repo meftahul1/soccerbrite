@@ -51,15 +51,15 @@ class Match:
         match = self.db.find_one({"_id": ObjectId(match_id)})
         if not match:
             return False
-        if match["current_players"] < match["max_players"]:
+        if match["current_players"] < int(match["max_players"]):
             self.db.update_one(
                 {"_id": ObjectId(match_id)},
                 {
-                    "$push": {"participants": [user_email]},
+                    "$push": {"participants": user_email},
                     "$inc": {"current_players": 1}
                 }
             )
-            if match["current_players"] + 1 == match["max_players"]:
+            if match["current_players"] + 1 == int(match["max_players"]):
                 self.db.update_one({"_id": ObjectId(match_id)}, {"$set": {"match_status": "full"}})
             return True
         return False  # Match is already full
@@ -70,7 +70,7 @@ class Match:
             self.db.update_one(
                 {"_id": ObjectId(match_id)},
                 {
-                    "$pull": {"participants": {"user_email": user_email}},
+                    "$pull": {"participants": user_email},
                     "$inc": {"current_players": -1},
                     "$set": {"match_status": "open"}
                 }
@@ -144,9 +144,7 @@ class Match:
             "$or": [
                 {
                     "participants": {
-                        "$elemMatch": {
-                            "user_email": user_email
-                        }
+                        "$in": [user_email]
                     }
                 },
                 {

@@ -196,7 +196,7 @@ const useEvents = () => {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/sign-up`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/join-match/${eventId}`,
         {
           method: "POST",
           headers: {
@@ -204,13 +204,49 @@ const useEvents = () => {
           },
           body: JSON.stringify({
             user_email: session?.user?.email,
-            match_id: eventId,
           }),
         }
       );
 
       if (!response.ok) {
         throw new Error("Failed to sign up for event");
+      }
+
+      await getPublicEvents();
+      return true;
+    } catch (err) {
+      setError(err.message);
+      return false;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const signOffEvent = async (eventId) => {
+    if (status !== "authenticated") {
+      setError("You must be logged in to sign off an event");
+      return false;
+    }
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/leave-match/${eventId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_email: session?.user?.email,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to sign off from event");
       }
 
       await getPublicEvents();
@@ -238,6 +274,8 @@ const useEvents = () => {
     updateFilters,
     handlePageChange,
     isAuthenticated: status === "authenticated",
+    signUpEvent,
+    signOffEvent,
   };
 };
 

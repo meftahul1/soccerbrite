@@ -1,6 +1,8 @@
 "use client";
 import React, { useRef, useEffect } from "react";
 import { useLoadScript, GoogleMap, Marker } from "@react-google-maps/api";
+import useEvents from "../hooks/useEvents";
+import { useRouter } from "next/navigation";
 
 const EventDetails = ({
   event,
@@ -9,11 +11,13 @@ const EventDetails = ({
   onClose,
   mapContainerStyle = { width: "100%", height: "200px" },
 }) => {
+  const { signUpEvent, signOffEvent } = useEvents();
   const mapRef = useRef(null);
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     libraries: ["places"],
   });
+  const router = useRouter();
 
   const createGoogleMapsLink = (location) => {
     if (location?.location?.coordinates) {
@@ -57,6 +61,24 @@ const EventDetails = ({
       </div>
     );
   }
+
+  const handleSignUpEvent = async () => {
+    try {
+      await signUpEvent(event._id);
+      router.push("/calendar");
+    } catch (error) {
+      console.error("Error signing up for event:", error);
+    }
+  };
+
+  const handleSignOffEvent = async () => {
+    try {
+      await signOffEvent(event._id);
+      router.push("/events");
+    } catch (error) {
+      console.error("Error signing off event:", error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -151,12 +173,18 @@ const EventDetails = ({
           {/* Action buttons */}
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
             {status === "registered" && (
-              <button className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors">
+              <button
+                className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition-colors"
+                onClick={handleSignOffEvent}
+              >
                 Cancel Registration
               </button>
             )}
             {status === "not-registered" && (
-              <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+                onClick={handleSignUpEvent}
+              >
                 Sign Up
               </button>
             )}
