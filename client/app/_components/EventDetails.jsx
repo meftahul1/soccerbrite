@@ -14,9 +14,10 @@ const EventDetails = ({
 }) => {
   const { signUpEvent, signOffEvent, deleteEvent } = useEvents();
   const mapRef = useRef(null);
+  const [libraries] = useState(["places"]);
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-    libraries: ["places"],
+    libraries,
   });
   const router = useRouter();
   const [weather, setWeather] = useState(null);

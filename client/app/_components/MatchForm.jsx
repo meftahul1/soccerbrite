@@ -17,6 +17,7 @@ const MatchForm = ({ matchId = null, mapContainerStyle, defaultCenter }) => {
   const { createEvent, editEvent, error, isSubmitting, getEvent } = useEvents();
   const autocompleteRef = useRef(null);
   const mapRef = useRef(null);
+  const [libraries] = useState(["places"]);
 
   const [formData, setFormData] = useState({
     match_name: "",
@@ -88,7 +89,7 @@ const MatchForm = ({ matchId = null, mapContainerStyle, defaultCenter }) => {
 
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-    libraries: ["places"],
+    libraries,
   });
 
   useEffect(() => {

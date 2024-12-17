@@ -96,13 +96,6 @@ class MatchController:
                 match["_id"] = str(match["_id"])
             return jsonify({"matches": matches}), 200
         
-        @self.app.route('/api/all-matches', methods=['GET'])
-        def get_all_matches():
-            matches = self.match_model.get_all_matches()
-            for match in matches:
-                match["_id"] = str(match["_id"])
-            return jsonify({"matches": matches}), 200
-        
         @self.app.route('/api/update-match/<match_id>', methods=['POST'])
         def update_match(match_id):
             data = request.json
@@ -130,6 +123,17 @@ class MatchController:
             print(user_email, date_obj)
             matches = self.match_model.get_upcoming_user_matches(user_email, date_obj)
             print(matches)
+            for match in matches:
+                match["_id"] = str(match["_id"])
+            return jsonify({"matches": matches}), 200
+        
+        @self.app.route('/api/upcoming_matches', methods=['POST'])
+        def get_all_matches():
+            data = request.json
+            date = data.get("date")
+            date_obj = datetime.strptime(date, '%Y-%m-%d')  # Convert string date to datetime object
+            
+            matches = self.match_model.get_upcoming_matches(date_obj)
             for match in matches:
                 match["_id"] = str(match["_id"])
             return jsonify({"matches": matches}), 200
