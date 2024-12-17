@@ -32,20 +32,32 @@ class Match:
     def get_match(self, match_id):
         return self.db.find_one({"_id": ObjectId(match_id)})
     
-    def update_match(self, match_id, match):
-        old_match = self.db.find_one({"_id": ObjectId(match_id)})
-        match['match_location'] = {
-            "name": match["match_location"]["name"],
-            "address": match["match_location"]["address"],
-            "location": {
-                "type": "Point",
-                "coordinates": [match["match_location"]["lng"], match["match_location"]["lat"]]
+    def update_match(self, match_id, match_name, match_description, match_date, match_time, match_endTime, match_location, organizer_email, match_public, max_participants):
+        try:
+            match = {
+                "match_name": match_name,
+                "match_description": match_description,
+                "match_date": match_date,
+                "match_time": match_time,
+                "match_endTime": match_endTime,
+                "match_location": {
+                    "name": match_location["name"],
+                    "address": match_location["address"],
+                    "location": {
+                        "type": "Point",
+                        "coordinates": [match_location["lng"], match_location["lat"]]
+                    }
+                },
+                "match_public": match_public,
+                "max_players": max_participants,
             }
-        }
-        if old_match and match:
-            self.db.update_one({"_id": ObjectId(match_id)}, {"$set": match})
-            return match
-        return match
+            old_match = self.db.find_one({"_id": ObjectId(match_id)})
+            if old_match and old_match["organizer"] == organizer_email and old_match["current_players"] < int(max_participants):
+                self.db.update_one({"_id": ObjectId(match_id)}, {"$set": match})
+                return True
+        except Exception as e:
+            print(e)
+        return False
     
     def join_match(self, match_id, user_email):
         match = self.db.find_one({"_id": ObjectId(match_id)})

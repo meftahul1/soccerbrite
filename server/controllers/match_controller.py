@@ -52,10 +52,10 @@ class MatchController:
                 return jsonify({"message": "Successfully left the match"}), 200
             return jsonify({"error": "Error leaving the match"}), 400
 
-        @self.app.route('/api/cancel-match/<match_id>', methods=['DELETE'])
+        @self.app.route('/api/cancel-match/<match_id>', methods=['POST'])
         def cancel_match(match_id):
             data = request.json
-            organizer_email = data.get("organizer_email")
+            organizer_email = data.get("user_email")
             success = self.match_model.cancel_match(match_id, organizer_email)
             if success:
                 return jsonify({"message": "Match cancelled successfully"}), 200
@@ -96,11 +96,23 @@ class MatchController:
                 match["_id"] = str(match["_id"])
             return jsonify({"matches": matches}), 200
         
-        @self.app.route('/api/match/<match_id>', methods=['PUT'])
+        @self.app.route('/api/update-match/<match_id>', methods=['POST'])
         def update_match(match_id):
             data = request.json
-            match = self.match_model.update_match(match_id, data)
-            return jsonify({"match": match}), 200
+            match_name = data.get("match_name")
+            match_description = data.get("match_description")
+            match_date = data.get("match_date")
+            match_time = data.get("match_time")
+            match_endTime = data.get("match_endTime")
+            match_location = data.get("match_location")  # {'name': 'location name', 'address': 'location address', 'lat': ..., 'lng': ...}
+            organizer_email = data.get("organizer_email")
+            match_public = data.get("match_public")
+            max_participants = data.get("max_players")
+
+            match = self.match_model.update_match(match_id, match_name, match_description, match_date, match_time, match_endTime, match_location, organizer_email, match_public, max_participants)
+            if match:
+                return jsonify({"message": "Match updated successfully"}), 200
+            return jsonify({"error": "Error updating the match"}), 400
         
         @self.app.route('/api/user_upcoming_matches', methods=['POST'])
         def get_upcoming_user_matches():

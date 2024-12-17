@@ -259,6 +259,85 @@ const useEvents = () => {
     }
   };
 
+  const deleteEvent = async (eventId) => {
+    if (status !== "authenticated") {
+      setError("You must be logged in to delete an event");
+      return false;
+    }
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/cancel-match/${eventId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_email: session?.user?.email,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to delete event");
+      }
+
+      await fetchEvents();
+      return true;
+    } catch (err) {
+      setError(err.message);
+      return false;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const editEvent = async (eventId, formData) => {
+    if (status !== "authenticated") {
+      setError("You must be logged in to edit an event");
+      return false;
+    }
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/update-match/${eventId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...formData,
+            organizer_email: session?.user?.email,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update match");
+      }
+
+      await fetchEvents();
+      return true;
+    } catch (err) {
+      setError(err.message);
+      return false;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const getEvent = (eventId) => {
+    return events.find((event) => event._id === eventId);
+  };
+
   return {
     events,
     publicEvents,
@@ -276,6 +355,9 @@ const useEvents = () => {
     isAuthenticated: status === "authenticated",
     signUpEvent,
     signOffEvent,
+    deleteEvent,
+    getEvent,
+    editEvent,
   };
 };
 

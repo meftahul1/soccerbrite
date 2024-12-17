@@ -12,24 +12,17 @@ import {
 import { useLoadScript, GoogleMap, Marker } from "@react-google-maps/api";
 import useEvents from "../hooks/useEvents";
 
-const MatchForm = ({ mapContainerStyle, defaultCenter }) => {
+const MatchForm = ({ matchId = null, mapContainerStyle, defaultCenter }) => {
   const router = useRouter();
-  const { createEvent, error, isSubmitting } = useEvents();
+  const { createEvent, editEvent, error, isSubmitting, getEvent } = useEvents();
   const autocompleteRef = useRef(null);
   const mapRef = useRef(null);
-  const [markerPosition, setMarkerPosition] = useState(defaultCenter);
-  const [searchInput, setSearchInput] = useState("");
-
-  const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
-    libraries: ["places"],
-  });
 
   const [formData, setFormData] = useState({
     match_name: "",
     match_description: "",
     match_date: "",
-    match_startTime: "",
+    match_time: "",
     match_endTime: "",
     match_location: {
       name: "",
@@ -37,8 +30,65 @@ const MatchForm = ({ mapContainerStyle, defaultCenter }) => {
       lat: defaultCenter.lat,
       lng: defaultCenter.lng,
     },
-    max_participants: "",
+    max_players: "",
     match_public: true,
+  });
+  const [markerPosition, setMarkerPosition] = useState(defaultCenter);
+  const [searchInput, setSearchInput] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasLoadedInitialData, setHasLoadedInitialData] = useState(false);
+
+  // Fetch event data if matchId is provided
+  useEffect(() => {
+    const fetchEventData = async () => {
+      if (matchId && !hasLoadedInitialData) {
+        try {
+          const eventData = await getEvent(matchId);
+          if (eventData) {
+            // Format date string to YYYY-MM-DD for input[type="date"]
+            const formattedDate = new Date(eventData.match_date)
+              .toISOString()
+              .split("T")[0];
+
+            const formattedData = {
+              ...eventData,
+              match_date: formattedDate,
+              match_location: {
+                name: eventData.match_location?.name || "",
+                address: eventData.match_location?.address || "",
+                lat:
+                  eventData.match_location?.location?.coordinates[1] ||
+                  defaultCenter.lat,
+                lng:
+                  eventData.match_location?.location?.coordinates[0] ||
+                  defaultCenter.lng,
+              },
+            };
+
+            setFormData(formattedData);
+            setMarkerPosition({
+              lat: formattedData.match_location.lat,
+              lng: formattedData.match_location.lng,
+            });
+            setSearchInput(formattedData.match_location.address);
+            setHasLoadedInitialData(true);
+          }
+        } catch (error) {
+          console.error("Error fetching event:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      } else if (!matchId) {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEventData();
+  }, [matchId, getEvent, defaultCenter, hasLoadedInitialData]);
+
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    libraries: ["places"],
   });
 
   useEffect(() => {
@@ -141,24 +191,28 @@ const MatchForm = ({ mapContainerStyle, defaultCenter }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Validate times before submission
-    if (!validateTimes(formData.start_time, formData.end_time)) {
-      alert("End time must be after start time");
-      return;
+
+    let success;
+    if (matchId) {
+      success = await editEvent(matchId, formData);
+    } else {
+      success = await createEvent(formData);
     }
-    const success = await createEvent(formData);
+
     if (success) {
       router.push("/events");
     }
   };
 
   if (loadError) return <div>Error loading maps</div>;
-  if (!isLoaded) return <div>Loading maps...</div>;
+  if (!isLoaded || isLoading) return <div>Loading...</div>;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container mx-auto px-4 max-w-2xl">
-        <h1 className="text-3xl font-bold mb-8">Create Soccer Match</h1>
+        <h1 className="text-3xl font-bold mb-8">
+          {matchId ? "Edit Soccer Match" : "Create Soccer Match"}
+        </h1>
 
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -219,8 +273,8 @@ const MatchForm = ({ mapContainerStyle, defaultCenter }) => {
               </label>
               <input
                 type="time"
-                name="match_startTime"
-                value={formData.match_startTime}
+                name="match_time"
+                value={formData.match_time}
                 onChange={handleInputChange}
                 required
                 className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -304,8 +358,8 @@ const MatchForm = ({ mapContainerStyle, defaultCenter }) => {
             </label>
             <input
               type="number"
-              name="max_participants"
-              value={formData.max_participants}
+              name="max_players"
+              value={formData.max_players}
               onChange={handleInputChange}
               required
               min="2"
@@ -346,7 +400,13 @@ const MatchForm = ({ mapContainerStyle, defaultCenter }) => {
               className={`px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 
                 ${isSubmitting ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              {isSubmitting ? "Creating..." : "Create Match"}
+              {isSubmitting
+                ? matchId
+                  ? "Updating..."
+                  : "Creating..."
+                : matchId
+                ? "Update Match"
+                : "Create Match"}
             </button>
           </div>
         </form>

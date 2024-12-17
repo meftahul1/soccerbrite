@@ -3,6 +3,7 @@ import React, { useRef, useEffect } from "react";
 import { useLoadScript, GoogleMap, Marker } from "@react-google-maps/api";
 import useEvents from "../hooks/useEvents";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const EventDetails = ({
   event,
@@ -11,7 +12,7 @@ const EventDetails = ({
   onClose,
   mapContainerStyle = { width: "100%", height: "200px" },
 }) => {
-  const { signUpEvent, signOffEvent } = useEvents();
+  const { signUpEvent, signOffEvent, deleteEvent } = useEvents();
   const mapRef = useRef(null);
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
@@ -80,6 +81,18 @@ const EventDetails = ({
     }
   };
 
+  const handleDeleteEvent = async () => {
+    try {
+      await deleteEvent(event._id);
+      router.push("/events");
+    } catch (error) {
+      console.error("Error deleting event:", error);
+    }
+  };
+
+  const handleEditEvent = () => {
+    router.push(`/events/edit/${event._id}`);
+  };
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 relative">
@@ -190,10 +203,16 @@ const EventDetails = ({
             )}
             {status === "organizer" && (
               <>
-                <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
-                  Edit Event
-                </button>
-                <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">
+                <Link
+                  href={`/events/edit/${event._id}`}
+                  className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+                >
+                  Edit Match
+                </Link>
+                <button
+                  className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors"
+                  onClick={handleDeleteEvent}
+                >
                   Delete Event
                 </button>
               </>
