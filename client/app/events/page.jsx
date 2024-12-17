@@ -7,49 +7,6 @@ import SideBar from "../_components/SideBar";
 import FilterModal from "../_components/FilterModal";
 import EventDetails from "../_components/EventDetails";
 
-const fetchCoord = async (city) => {
-  try {
-    const country = "USA";
-    const response = await fetch(
-      `https://nominatim.openstreetmap.org/search?city=${city}&country=${country}&format=json&addressdetails=1`
-    );
-    if (!response.ok) {
-      throw new Error("Coordinate fetch error");
-    }
-    const data = await response.json();
-    if (data.length === 0) {
-      return null;
-    }
-    return {
-      lat: data[0].lat,
-      lon: data[0].lon,
-    };
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
-
-const fetchWeather = async (lat, lon) => {
-  try {
-    const response = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max&temperature_unit=fahrenheit&wind_speed_unit=mph&timezone=auto`
-    );
-    if (!response.ok) {
-      throw new Error("Weather fetch error");
-    }
-    const data = await response.json();
-    if (data && data.daily) {
-      return data;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
-
 const Events = () => {
   const {
     publicEvents,
@@ -61,7 +18,6 @@ const Events = () => {
     pagination,
     resetFilters,
   } = useEvents();
-  const [weather, setWeather] = useState({});
 
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -160,29 +116,6 @@ const Events = () => {
   const handleEventDetailsClose = () => {
     setEventDetails(null);
     setIsEventDetailsOpen(false);
-  };
-
-  const handleWeather = async (location, eventDate, eventId) => {
-    const city = location.trim();
-    const coord = await fetchCoord(city);
-    if (coord) {
-      const data = await fetchWeather(coord.lat, coord.lon);
-      if (data && data.daily) {
-        const dates = data.daily.time;
-        const dateStr = new Date(eventDate).toISOString().split("T")[0];
-        const index = dates.indexOf(dateStr);
-        if (index !== -1) {
-          const forecast = {
-            temperature_2m_max: data.daily.temperature_2m_max[index],
-            temperature_2m_min: data.daily.temperature_2m_min[index],
-            precipitation_probability_max:
-              data.daily.precipitation_probability_max[index],
-            wind_speed_10m_max: data.daily.wind_speed_10m_max[index],
-          };
-          setWeather((state) => ({ ...state, [eventId]: forecast }));
-        }
-      }
-    }
   };
 
   return (
@@ -293,26 +226,7 @@ const Events = () => {
                     Sign Up
                   </button>
                 </div>
-                <button
-                  className="event-btn weather"
-                  onClick={() =>
-                    handleWeather(event.location, event.date, event.id)
-                  }
-                >
-                  Weather
-                </button>
               </div>
-              {weather[event.id] && (
-                <div>
-                  <p>Max: {weather[event.id].temperature_2m_max}°F</p>
-                  <p>Min: {weather[event.id].temperature_2m_min}°F</p>
-                  <p>
-                    Precipitation:{" "}
-                    {weather[event.id].precipitation_probability_max}%
-                  </p>
-                  <p>Wind: {weather[event.id].wind_speed_10m_max} mph</p>
-                </div>
-              )}
             </div>
           ))}
         </div>
