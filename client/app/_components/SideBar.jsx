@@ -1,8 +1,13 @@
 "use client";
 import React from "react";
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 
 const SideBar = ({ selected }) => {
+  const handleSignOut = async (e) => {
+    e.preventDefault();
+    const result = await signOut({ callbackUrl: "/" });
+  };
   return (
     <aside className="w-52 h-auto bg-slate-800 text-gray-100 flex flex-col items-start p-5 shadow-md gap-4">
       <div className="logo-section">
@@ -36,13 +41,12 @@ const SideBar = ({ selected }) => {
         >
           Calendar
         </Link>
-
-        <Link
-          href="/"
+        <button
           className="block w-full px-4 py-2.5 rounded-md transition-colors duration-300 hover:bg-blue-500"
+          onClick={handleSignOut}
         >
           Log Out
-        </Link>
+        </button>
       </nav>
     </aside>
   );
