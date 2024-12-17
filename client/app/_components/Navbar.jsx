@@ -39,9 +39,9 @@ const Navbar = () => {
         </h1>
         {session ? (
           <>
-            <Link href="/dashboard">
+            <Link href="/user-homepage">
               <button className="hidden md:block bg-white px-8 py-2 rounded-full transition hover:bg-gray-200">
-                Dashboard
+                Home Page
               </button>
             </Link>
             <button

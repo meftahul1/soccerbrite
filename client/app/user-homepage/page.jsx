@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "./userHome.css";
 import Link from "next/link";
 import EventsHeader from "./components/EventsHeader";
@@ -7,34 +7,35 @@ import PublicEvents from "./components/PublicEvents";
 import PersonalEvents from "./components/PersonalEvents";
 import Personal from "./components/PersonalEvents";
 
+import SideBar from "../_components/SideBar";
+import { useSession } from "next-auth/react";
 
 const UserHome = () => {
+  const { data: session } = useSession();
+  const [name, setName] = useState("");
+
+  useEffect(() => {
+    if (session.user.name) {
+      setName(session.user.name);
+    } else {
+      setName(session.user.email.split("@")[0]);
+    }
+  }, []);
   return (
     <div className="user-home-layout">
-      <aside className="sidebar">
-        <div className="logo-section">
-          <h1>SoccerBrite</h1>
-        </div>
-        <nav className="nav-links">
-          <Link href="/user-homepage" className="active">Home</Link>
-          <Link href="/events">Events</Link>
-          <Link href="/calendar">Calendar</Link>
-          <Link href="/">Log Out</Link>
-        </nav>
-      </aside>
+      <SideBar selected="home" />
       <div className="main-content">
         <div className="heading">
-        <h1 className="header-1">Welcome to Soccerbrite, Name</h1>
-        <p className="subheading">Select an option from the sidebar to proceed.</p>
-      </div>
-        
+          <h1 className="header-1">Welcome to Soccerbrite, {name}</h1>
+          <p className="subheading">
+            Select an option from the sidebar to proceed.
+          </p>
+        </div>
 
         <EventsHeader />
-        
+
         <PublicEvents />
         <Personal />
-
-    
       </div>
     </div>
   );

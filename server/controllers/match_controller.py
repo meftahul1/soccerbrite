@@ -52,10 +52,10 @@ class MatchController:
                 return jsonify({"message": "Successfully left the match"}), 200
             return jsonify({"error": "Error leaving the match"}), 400
 
-        @self.app.route('/api/cancel-match/<match_id>', methods=['DELETE'])
+        @self.app.route('/api/cancel-match/<match_id>', methods=['POST'])
         def cancel_match(match_id):
             data = request.json
-            organizer_email = data.get("organizer_email")
+            organizer_email = data.get("user_email")
             success = self.match_model.cancel_match(match_id, organizer_email)
             if success:
                 return jsonify({"message": "Match cancelled successfully"}), 200
@@ -96,11 +96,30 @@ class MatchController:
                 match["_id"] = str(match["_id"])
             return jsonify({"matches": matches}), 200
         
-        @self.app.route('/api/match/<match_id>', methods=['PUT'])
+        @self.app.route('/api/all-matches', methods=['GET'])
+        def get_all_matches():
+            matches = self.match_model.get_all_matches()
+            for match in matches:
+                match["_id"] = str(match["_id"])
+            return jsonify({"matches": matches}), 200
+        
+        @self.app.route('/api/update-match/<match_id>', methods=['POST'])
         def update_match(match_id):
             data = request.json
-            match = self.match_model.update_match(match_id, data)
-            return jsonify({"match": match}), 200
+            match_name = data.get("match_name")
+            match_description = data.get("match_description")
+            match_date = data.get("match_date")
+            match_time = data.get("match_time")
+            match_endTime = data.get("match_endTime")
+            match_location = data.get("match_location")  # {'name': 'location name', 'address': 'location address', 'lat': ..., 'lng': ...}
+            organizer_email = data.get("organizer_email")
+            match_public = data.get("match_public")
+            max_participants = data.get("max_players")
+
+            match = self.match_model.update_match(match_id, match_name, match_description, match_date, match_time, match_endTime, match_location, organizer_email, match_public, max_participants)
+            if match:
+                return jsonify({"message": "Match updated successfully"}), 200
+            return jsonify({"error": "Error updating the match"}), 400
         
         @self.app.route('/api/user_upcoming_matches', methods=['POST'])
         def get_upcoming_user_matches():
@@ -114,3 +133,47 @@ class MatchController:
             for match in matches:
                 match["_id"] = str(match["_id"])
             return jsonify({"matches": matches}), 200
+        
+        @self.app.route('/api/public-matches', methods=['POST'])
+        def get_public_matches():
+            data = request.json
+            filters = {
+                "search_term": data.get("search_term", ""),
+                "location": data.get("location", None),
+                "radius": data.get("radius", 5000),
+                "date_from": data.get("date_from", None),
+                "date_to": data.get("date_to", None),
+                "start_time": data.get("start_time", None),
+                "end_time": data.get("end_time", None)
+            }
+            
+            # Pagination parameters
+            page = data.get("page", 1)
+            per_page = data.get("per_page", 10)
+
+            #user email
+            user_email = data.get("user_email", None)
+            
+            # Convert date strings to datetime objects if provided
+            if filters["date_from"]:
+                filters["date_from"] = datetime.strptime(filters["date_from"], '%Y-%m-%d')
+            if filters["date_to"]:
+                filters["date_to"] = datetime.strptime(filters["date_to"], '%Y-%m-%d')
+            
+            matches, total_count = self.match_model.get_public_matches(filters, user_email, page, per_page)
+            
+            # Convert ObjectId to string for JSON serialization
+            for match in matches:
+                match["_id"] = str(match["_id"])
+            
+            print(filters)
+            
+            return jsonify({
+                "matches": matches,
+                "pagination": {
+                    "current_page": page,
+                    "per_page": per_page,
+                    "total_items": total_count,
+                    "total_pages": (total_count + per_page - 1) // per_page
+                }
+            }), 200
