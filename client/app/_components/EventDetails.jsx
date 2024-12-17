@@ -1,7 +1,26 @@
-import React from "react";
+"use client";
+import React, { useRef } from "react";
+import { useLoadScript, GoogleMap, Marker } from "@react-google-maps/api";
 
-const EventDetails = ({ event, status, isOpen, onClose }) => {
+const EventDetails = ({
+  event,
+  status,
+  isOpen,
+  onClose,
+  mapContainerStyle = { width: "100%", height: "200px" },
+}) => {
   if (!isOpen) return null;
+
+  const mapRef = useRef(null);
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
+    libraries: ["places"],
+  });
+
+  const markerPosition = {
+    lat: event.match_location.location.coordinates[1],
+    lng: event.match_location.location.coordinates[0],
+  };
 
   const createGoogleMapsLink = (location) => {
     if (location?.location?.coordinates) {
@@ -10,6 +29,34 @@ const EventDetails = ({ event, status, isOpen, onClose }) => {
     }
     return null;
   };
+
+  // Render loading state
+  if (!isLoaded) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+          <div className="animate-pulse">
+            <div className="h-64 bg-gray-200 rounded mb-4"></div>
+            <div className="text-center text-gray-600">Loading map...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Render error state
+  if (loadError) {
+    console.error("Error loading maps:", loadError);
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+          <div className="text-center text-red-600">
+            Error loading map. Please try again later.
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -81,6 +128,26 @@ const EventDetails = ({ event, status, isOpen, onClose }) => {
             </div>
           </div>
 
+          {/* Map Container */}
+          <div className="rounded-lg overflow-hidden">
+            <GoogleMap
+              mapContainerStyle={mapContainerStyle}
+              center={markerPosition}
+              zoom={17}
+              onLoad={(map) => {
+                mapRef.current = map;
+              }}
+              options={{
+                streetViewControl: false,
+                mapTypeControl: false,
+                fullscreenControl: true,
+                zoomControl: true,
+              }}
+            >
+              <Marker position={markerPosition} />
+            </GoogleMap>
+          </div>
+
           {/* Action buttons */}
           <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
             {status === "registered" && (
@@ -94,9 +161,14 @@ const EventDetails = ({ event, status, isOpen, onClose }) => {
               </button>
             )}
             {status === "organizer" && (
-              <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">
-                Delete Event
-              </button>
+              <>
+                <button className="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
+                  Edit Event
+                </button>
+                <button className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors">
+                  Delete Event
+                </button>
+              </>
             )}
           </div>
         </div>

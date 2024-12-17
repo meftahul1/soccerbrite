@@ -1,9 +1,10 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 
 const SideBar = ({ selected }) => {
   return (
-    <aside className="w-52 h-full bg-slate-800 text-gray-100 flex flex-col items-start p-5 shadow-md gap-4">
+    <aside className="w-52 h-auto bg-slate-800 text-gray-100 flex flex-col items-start p-5 shadow-md gap-4">
       <div className="logo-section">
         <h1 className="text-xl font-bold">SoccerBrite</h1>
       </div>

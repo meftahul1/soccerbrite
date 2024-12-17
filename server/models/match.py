@@ -155,3 +155,61 @@ class Match:
             ]
         }))
     
+    def get_public_matches(self, filters, user_email, page=1, per_page=10):
+        # Start with base query for public and open matches
+        query = {
+            "match_public": True,
+            "match_status": "open",
+            "$and": [
+                {"organizer": {"$ne": user_email}},  # Exclude if the user is the organizer
+                {"participants": {"$nin": [user_email]}}  # Exclude if the user is in participants
+            ]
+        }
+        
+        # Add name search if provided
+        if filters["search_term"]:
+            query["match_name"] = {"$regex": filters["search_term"], "$options": "i"}
+        
+        # Add date range filter if provided
+        if filters["date_from"] or filters["date_to"]:
+            date_query = {}
+            if filters["date_from"]:
+                date_query["$gte"] = filters["date_from"]
+            if filters["date_to"]:
+                date_query["$lte"] = filters["date_to"]
+            if date_query:
+                query["match_date"] = date_query
+        
+        
+        # Add time range filter if provided
+        if filters["start_time"]:
+            query["match_time"] = {"$gte": filters["start_time"]}
+        if filters["end_time"]:
+            query["match_endTime"] = {"$lte": filters["end_time"]}
+        
+        # Handle location-based search
+        if filters.get("location") and isinstance(filters["location"], dict):
+            query["match_location.location"] = {
+                "$geoWithin": {
+                    "$centerSphere": [
+                        [
+                            filters["location"]["lng"],
+                            filters["location"]["lat"]
+                        ],
+                        filters["radius"] / 6378100  # Convert radius from meters to radians (Earth radius = 6378100 meters)
+                    ]
+                }
+            }
+        
+        # Get total count for pagination
+        total_count = self.db.count_documents(query)
+        
+        # Calculate skip value
+        skip = (page - 1) * per_page
+        
+        # Execute the query with pagination
+        matches = list(self.db.find(query)
+                    .skip(skip)
+                    .limit(per_page))
+        
+        return matches, total_count
