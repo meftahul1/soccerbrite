@@ -35,7 +35,7 @@ const Navbar = () => {
         {/* <img src={controller} alt="logo" />
          */}
         <h1 className="text-xl sm:text-4xl md:text-5xl inline-block max-w-3xl font-semibold pt-10 text-white">
-          SoccerBrite
+          Soccerbrite
         </h1>
         {session ? (
           <>

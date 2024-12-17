@@ -2,6 +2,10 @@
 import React from "react";
 import "./userHome.css";
 import Link from "next/link";
+import Events from "./components/Events";
+import PersonalEvents from "./components/PersonalEvents";
+import Footer from "../_components/Footer";
+import Personal from "./components/PersonalEvents";
 
 const UserHome = () => {
   return (
@@ -18,8 +22,16 @@ const UserHome = () => {
         </nav>
       </aside>
       <div className="main-content">
-        <h2>Welcome to Soccerbrite</h2>
-        <p>Select an option from the sidebar to proceed.</p>
+        <div className="heading">
+        <h1 className="header-1">Welcome to Soccerbrite, Name</h1>
+        <p className="subheading">Select an option from the sidebar to proceed.</p>
+      </div>
+        
+
+        <Events />
+        <Personal />
+
+    
       </div>
     </div>
   );

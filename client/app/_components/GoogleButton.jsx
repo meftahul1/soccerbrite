@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 const GoogleButton = () => {
   return (
     <button
-      className="flex w-full justify-center gap-5 rounded bg-black px-4 py-4 text-sm font-bold drop-shadow-md hover:bg-gray-50"
+      className="flex w-full justify-center gap-5 rounded bg-white px-4 py-4 text-sm font-bold drop-shadow-md hover:bg-gray-50 border border-gray-300 transition-all duration-300 ease-in-out"
       onClick={() => signIn("google", { callbackUrl: "/" })}
     >
       <div className="flex items-center gap-2">

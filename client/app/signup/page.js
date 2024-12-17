@@ -55,15 +55,15 @@ const Signup = () => {
     <>
       <div className="nav">
         <div className="header-nav">
-          <h1>SOCCERBRITE</h1>
+          <h1>Soccerbrite</h1>
           <a href="/" className="back-home-btn">
             Back to Home
           </a>
         </div>
       </div>
       <div className="signup-container">
-        <h1>Welcome to SoccerBrite</h1>
-        <h2>Enter Credentials to Sign Up</h2>
+        <h1 className="header-1">Welcome to Soccerbrite</h1>
+        <h2 className="subheader-1">Enter Credentials to Sign Up</h2>
     
         <form className="signup-form" onSubmit={handleSubmit}>
           <label htmlFor="firstName">First Name</label>
@@ -124,6 +124,12 @@ const Signup = () => {
             Login Now
           </Link>
         </p>
+
+        <div className="divider">
+          <span className="line"></span>
+          <span className="or-text">or</span>
+          <span className="line"></span>
+        </div>
 
 		<div className="google-container">
           <GoogleButton className="google-btn" />

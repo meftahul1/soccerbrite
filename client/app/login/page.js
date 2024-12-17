@@ -48,15 +48,15 @@ const Login = () => {
     <>
       <div className="nav">
         <div className="header-nav">
-          <h1>SOCCERBRITE</h1>
+          <h1>Soccerbrite</h1>
           <a href="/" className="back-home-btn">
             Back to Home
           </a>
         </div>
       </div>
       <div className="signup-container">
-        <h1>Welcome to SoccerBrite</h1>
-        <h2>Enter Credentials to Log In</h2>
+        <h1 className="header-1">Welcome to Soccerbrite</h1>
+        <h2 className="subheader-1">Enter Credentials to Log In</h2>
 
         <form className="signup-form" onSubmit={handleSubmit}>
           <label htmlFor="email">Email Address</label>
@@ -103,9 +103,7 @@ const Login = () => {
           </Link>
         </p>
 
-        <div className="google-container">
-          <GoogleButton className="google-btn" />
-        </div>
+        
       </div>
     </>
   );
