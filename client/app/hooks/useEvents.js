@@ -185,6 +185,44 @@ const useEvents = () => {
     [getPublicEvents]
   );
 
+  const signUpEvent = async (eventId) => {
+    if (status !== "authenticated") {
+      setError("You must be logged in to sign up for an event");
+      return false;
+    }
+
+    setIsSubmitting(true);
+    setError("");
+
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/sign-up`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            user_email: session?.user?.email,
+            match_id: eventId,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to sign up for event");
+      }
+
+      await getPublicEvents();
+      return true;
+    } catch (err) {
+      setError(err.message);
+      return false;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return {
     events,
     publicEvents,

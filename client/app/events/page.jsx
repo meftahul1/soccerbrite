@@ -5,6 +5,7 @@ import Link from "next/link";
 import useEvents from "../hooks/useEvents";
 import SideBar from "../_components/SideBar";
 import FilterModal from "../_components/FilterModal";
+import EventDetails from "../_components/EventDetails";
 
 const Events = () => {
   const {
@@ -20,6 +21,8 @@ const Events = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [eventDetails, setEventDetails] = useState(null);
+  const [isEventDetailsOpen, setIsEventDetailsOpen] = useState(false);
   const [useCurrentLocation, setUseCurrentLocation] = useState(false);
   const [filters, setFilters] = useState({
     radius: 5, // in km
@@ -105,6 +108,16 @@ const Events = () => {
     setIsModalOpen(false);
   };
 
+  const handleEventDetails = (event) => {
+    setEventDetails(event);
+    setIsEventDetailsOpen(true);
+  };
+
+  const handleEventDetailsClose = () => {
+    setEventDetails(null);
+    setIsEventDetailsOpen(false);
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-50">
       <SideBar selected="events" />
@@ -117,6 +130,12 @@ const Events = () => {
         handleApplyFilters={handleApplyFilters}
         onLocationChange={handleLocationChange}
         clearFilters={clearFilters}
+      />
+      <EventDetails
+        event={eventDetails}
+        status={"not-registered"}
+        isOpen={isEventDetailsOpen}
+        onClose={handleEventDetailsClose}
       />
 
       <div className="flex-1 p-8">
@@ -201,7 +220,7 @@ const Events = () => {
                 </div>
                 <div className="mt-6">
                   <button
-                    onClick={() => handleSignUp(event._id)}
+                    onClick={() => handleEventDetails(event)}
                     className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
                   >
                     Sign Up

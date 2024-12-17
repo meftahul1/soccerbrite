@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { useLoadScript, GoogleMap, Marker } from "@react-google-maps/api";
 
 const EventDetails = ({
@@ -9,18 +9,11 @@ const EventDetails = ({
   onClose,
   mapContainerStyle = { width: "100%", height: "200px" },
 }) => {
-  if (!isOpen) return null;
-
   const mapRef = useRef(null);
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY,
     libraries: ["places"],
   });
-
-  const markerPosition = {
-    lat: event.match_location.location.coordinates[1],
-    lng: event.match_location.location.coordinates[0],
-  };
 
   const createGoogleMapsLink = (location) => {
     if (location?.location?.coordinates) {
@@ -28,6 +21,13 @@ const EventDetails = ({
       return `https://www.google.com/maps?q=${lat},${lng}`;
     }
     return null;
+  };
+
+  if (!isOpen || !event) return null;
+
+  const markerPosition = {
+    lat: event.match_location.location.coordinates[1],
+    lng: event.match_location.location.coordinates[0],
   };
 
   // Render loading state
