@@ -4,10 +4,12 @@ import Image from 'next/image'
 import left from "../../../images/left_arrow.svg"
 import right from "../../../images/right_arrow.svg"
 
-const Events = () => {
+const PublicEvents = () => {
     const [currentIndex, setcurrentIndex] = useState(0);
     const [cardsToShow, setcardsToShow] = useState(1);
 
+
+    // @jair integrate backend and replace projectsData with the data stored in db
     const projectsData = [
         {
             title: "Soccer Tournament",
@@ -57,7 +59,7 @@ const Events = () => {
     return (
         <div className='container mx-auto py-4 pt-20 px-6 md:px-20 lg:px-32 my-20 w-full overflow-hidden' id='Events'>
             <h1 className='text-2xl sm:text-4xl font-bold mb-2 text-center'>Upcoming <span className='underline underline-offset-4 decoration-1 under font-light'>on Soccerbrite</span></h1>
-            <p className='text-center text-gray-500 mb-8 max-w-80 mx-auto'>Explore Events Hosted by SoccerBrite</p>
+            <p className='text-center text-gray-500 mb-8 max-w-80 mx-auto'>Explore Upcoming Events Near You</p>
 
             {/* Slider buttons */}
             <div className='flex justify-end items-center mb-8'>
@@ -98,4 +100,4 @@ const Events = () => {
     );
 };
 
-export default Events;
+export default PublicEvents;

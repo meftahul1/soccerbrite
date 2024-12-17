@@ -4,10 +4,12 @@ import Image from 'next/image'
 import left from "../../../images/left_arrow.svg"
 import right from "../../../images/right_arrow.svg"
 
-const Personal = () => {
+const PersonalEvents = () => {
     const [currentIndex, setcurrentIndex] = useState(0);
     const [cardsToShow, setcardsToShow] = useState(1);
 
+
+    // same here
     const projectsData = [
         {
             title: "Soccer Tournament",
@@ -89,7 +91,7 @@ const Personal = () => {
                                 <p className='text-gray-500 text-sm'><strong>Location:</strong> {project.location}</p>
                                 <p className='text-gray-500 text-sm'><strong>Remaining Spots:</strong> {project.remainingSpots}</p>
                                 <button className="mt-auto bg-[#3498db] text-white px-4 py-2 rounded hover:bg-[#2980b9] transition-all duration-300 ease-in-out">
-                                Join
+                                Cancel
                                 </button>
                             </div>
                         </div>
@@ -100,4 +102,4 @@ const Personal = () => {
     );
 };
 
-export default Personal;
+export default PersonalEvents;

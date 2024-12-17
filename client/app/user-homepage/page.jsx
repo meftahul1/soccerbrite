@@ -2,10 +2,11 @@
 import React from "react";
 import "./userHome.css";
 import Link from "next/link";
-import Events from "./components/Events";
+import EventsHeader from "./components/EventsHeader";
+import PublicEvents from "./components/PublicEvents";
 import PersonalEvents from "./components/PersonalEvents";
-import Footer from "../_components/Footer";
 import Personal from "./components/PersonalEvents";
+
 
 const UserHome = () => {
   return (
@@ -28,7 +29,9 @@ const UserHome = () => {
       </div>
         
 
-        <Events />
+        <EventsHeader />
+        
+        <PublicEvents />
         <Personal />
 
     
