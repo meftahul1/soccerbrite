@@ -96,6 +96,13 @@ class MatchController:
                 match["_id"] = str(match["_id"])
             return jsonify({"matches": matches}), 200
         
+        @self.app.route('/api/all-matches', methods=['GET'])
+        def get_all_matches():
+            matches = self.match_model.get_all_matches()
+            for match in matches:
+                match["_id"] = str(match["_id"])
+            return jsonify({"matches": matches}), 200
+        
         @self.app.route('/api/update-match/<match_id>', methods=['POST'])
         def update_match(match_id):
             data = request.json

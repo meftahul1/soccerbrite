@@ -334,6 +334,27 @@ const useEvents = () => {
     }
   };
 
+  const getAllPublicEvents = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/all-matches`
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch public events");
+      }
+
+      const data = await response.json();
+      return data.matches || [];
+    } catch (error) {
+      console.error("Error fetching public events:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const getEvent = (eventId) => {
     return events.find((event) => event._id === eventId);
   };
@@ -358,6 +379,7 @@ const useEvents = () => {
     deleteEvent,
     getEvent,
     editEvent,
+    getAllPublicEvents,
   };
 };
 

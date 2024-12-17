@@ -223,3 +223,6 @@ class Match:
                     .limit(per_page))
         
         return matches, total_count
+    
+    def get_all_matches(self):
+        return list(self.db.find({}))
