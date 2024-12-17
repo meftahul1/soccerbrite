@@ -1,7 +1,14 @@
-export default function Layout({ children }) {
+import { Provider } from "./Provider";
+import { getServerSession } from "next-auth";
+import "./Home.css";
+
+export default async function Layout({ children }) {
+  const session = await getServerSession();
   return (
     <html>
-      <body>{children}</body>
+      <body>
+        <Provider session={session}>{children}</Provider>
+      </body>
     </html>
   );
 }

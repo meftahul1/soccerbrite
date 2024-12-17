@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "tailwindcss": "^3.4.15"
+  },
+  "dependencies": {
+    "next-auth": "^4.24.10"
   }
 }
