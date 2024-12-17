@@ -37,7 +37,7 @@ const Login = () => {
       if (result?.error) {
         console.error("Login error:", result.error);
       } else {
-        push("/");
+        push("/user-homepage");
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -102,8 +102,6 @@ const Login = () => {
             Sign Up Now
           </Link>
         </p>
-
-        
       </div>
     </>
   );
