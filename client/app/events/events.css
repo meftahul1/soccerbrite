@@ -18,7 +18,7 @@ body {
   
   .header h1 {
     font-size: 2rem;
-    color: #333;
+    color: #fdfafa;
   }
   
   .create-event-btn {
@@ -142,6 +142,7 @@ body {
   .events-content {
     flex: 1;
     padding: 20px;
+    background-color: transparent;
   }
   
   .header {

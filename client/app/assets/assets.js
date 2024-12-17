@@ -1,5 +1,6 @@
 import uefa from './uefa.png'
 import bln from './vini.jpeg'
+import fc from './project_img_0.jpeg'
 import futsal from './futsal.jpg'
 import socceroof from './socceroof.jpg'
 
@@ -36,22 +37,10 @@ export const projectsData = [
       image: bln
     },
     {
-      title: "Ballon D'Or",
+      title: "FC24 Knockout",
       price: "September 4, 2024",
-      location: "Chicago",
-      image: bln
-    },
-    {
-      title: "Ballon D'Or",
-      price: "September 4, 2024",
-      location: "Chicago",
-      image: bln
-    },
-    {
-      title: "Ballon D'Or",
-      price: "September 4, 2024",
-      location: "Chicago",
-      image: bln
+      location: "Remote",
+      image: fc
     },
     {
       title: "Ballon D'Or",

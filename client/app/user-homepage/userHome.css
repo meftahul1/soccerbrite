@@ -1,16 +1,19 @@
+/* Ensure html and body cover the full height */
 body {
   margin: 0;
+  height: 100%;
   font-family: Arial, sans-serif;
 }
 
+/* Make the parent container take the full height */
 .user-home-layout {
   display: flex;
-  height: 100vh;
+  height: 100%; /* Use 100% to match html/body height */
 }
 
+/* Sidebar will automatically take full height of the parent */
 .sidebar {
   width: 200px;
-  height: 150vh;
   background-color: #2c3e50;
   color: #ecf0f1;
   display: flex;
@@ -20,6 +23,7 @@ body {
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
   gap: 15px;
 }
+
 
 .sidebar .nav-links {
   width: 100%; 
@@ -54,7 +58,21 @@ body {
   color: #333;
 }
 
-.main-content p {
-  font-size: 1rem;
-  color: #555;
+
+
+.heading {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  
+}
+
+.header-1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.subheading {
+  font-size: 1.2rem;
 }
